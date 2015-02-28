@@ -191,3 +191,39 @@ To not need to always specify the `sql-file` option in your `db-migrate create` 
     "sql-file" : true
 }
 ```
+
+## Running Migrations
+
+When first running the migrations, all will be executed in sequence. A table named `migrations` will also be created in your database to track which migrations have been applied.
+
+      $ db-migrate up
+      [INFO] Processed migration 20111219120000-add-pets
+      [INFO] Processed migration 20111219120005-add-owners
+      [INFO] Done
+
+Subsequent attempts to run these migrations will result in the following output
+
+      $ db-migrate up
+      [INFO] No migrations to run
+      [INFO] Done
+
+If we were to create another migration using `db-migrate create`, and then execute migrations again, we would execute only those not previously executed:
+
+      $ db-migrate up
+      [INFO] Processed migration 20111220120210-add-kennels
+      [INFO] Done
+
+You can also run migrations incrementally by specifying a date substring. The example below will run all migrations created on or before December 19, 2011:
+
+      $ db-migrate up 20111219
+      [INFO] Processed migration 20111219120000-add-pets
+      [INFO] Processed migration 20111219120005-add-owners
+      [INFO] Done
+
+You can also run a specific number of migrations with the -c option:
+
+      $ db-migrate up -c 1
+      [INFO] Processed migration 20111219120000-add-pets
+      [INFO] Done
+
+All of the down migrations work identically to the up migrations by substituting the word `down` for `up`.
