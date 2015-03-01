@@ -1,0 +1,13 @@
+site_name: db-migrate
+pages:
+- [index.md, Home]
+- [Getting Started/installation.md, 'Getting Started', Installation]
+- [Getting Started/configuration.md, 'Getting Started', Configuration]
+- [Getting Started/the commands.md, 'Getting Started', 'The Commands']
+- [Getting Started/usage.md, 'Getting Started', Usage]
+- [API/generic datatypes.md, 'API', 'Generic Datatypes']
+- [API/SQL.md, 'API', 'SQL API']
+- [API/NoSQL.md, 'API', 'NoSQL API']
+docs_dir: .
+repo_url: https://github.com/db-migrate/english-docs
+theme: readthedocs
