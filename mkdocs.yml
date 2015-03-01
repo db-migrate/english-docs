@@ -1,6 +1,7 @@
 site_name: db-migrate
 pages:
 - [index.md, Home]
+- [help.md, 'Helping db-migrate']
 - [Getting Started/installation.md, 'Getting Started', Installation]
 - [Getting Started/configuration.md, 'Getting Started', Configuration]
 - [Getting Started/the commands.md, 'Getting Started', 'The Commands']
@@ -9,6 +10,7 @@ pages:
 - [API/SQL.md, 'API', 'SQL API']
 - [API/NoSQL.md, 'API', 'NoSQL API']
 - [Developers/running tests.md, 'Developers', 'Running Tests']
+- [Developers/contributing.md, 'Developers', Contributing]
 docs_dir: .
 repo_url: https://github.com/db-migrate/english-docs
-theme: amelia
+theme: readthedocs
