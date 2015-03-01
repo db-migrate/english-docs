@@ -8,6 +8,7 @@ pages:
 - [API/generic datatypes.md, 'API', 'Generic Datatypes']
 - [API/SQL.md, 'API', 'SQL API']
 - [API/NoSQL.md, 'API', 'NoSQL API']
+- [Developers/running tests.md, 'Developers', 'Running Tests']
 docs_dir: .
 repo_url: https://github.com/db-migrate/english-docs
-theme: readthedocs
+theme: amelia
