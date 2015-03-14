@@ -150,10 +150,19 @@ The sql files will have the following content:
 And the javascript file with the following code that load these sql files:
 
 ```javascript
-dbm = dbm || require('db-migrate');
-var type = dbm.dataType;
+var dbm;
+var type;
 var fs = require('fs');
 var path = require('path');
+
+/**
+  * We receive the dbmigrate dependency from dbmigrate initially.
+  * This enables us to not have to rely on NODE_PATH.
+  */
+exports.setup = function(options) {
+  dbm = options.dbmigrate;
+  type = dbm.datatype;
+};
 
 exports.up = function(db, callback) {
   var filePath = path.join(__dirname + '/sqls/20111219120000-add-people-up.sql');
