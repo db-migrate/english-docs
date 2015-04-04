@@ -1,20 +1,34 @@
 ## Installation
 
+## New Instructions Since (v0.10.x)
+
+To use db-migrate you need to install it globally first:
+
     $ npm install -g db-migrate
 
-DB-Migrate is now available to you via:
-
-    $ db-migrate
-
-### As local module
-
-Want to use db-migrate as local module?
+If you want to use db-migrate as local module now you can install it in your
+local modules:
 
     $ npm install db-migrate
 
-DB-Migrate is now available to you via:
+The following command will execute **always** your local version of db-migrate
+if you have installed a local version. If it does not find any local version
+in your current directory it executes the globally installed version.
 
+To use db-migrate you can now use:
+
+    $ db-migrate
+
+### Using db-migrate in tests
+
+You want to use db-migrate for example with travis ci? You need to do one of
+the following things:
+
+ * Install it via package.json and call it via
     $ node node_modules/db-migrate/bin/db-migrate
+
+ * Install it globally via .travis.yml config and call it via
+    $ db-migrate
 
 ## Basic Usage
 
@@ -37,3 +51,22 @@ Options:
   --migration-table           Set the name of the migration table.
   --table, --migration-table                                                  [default: "migrations"]
 ```
+
+
+## Old Installation instructions
+
+    $ npm install -g db-migrate
+
+DB-Migrate is now available to you via:
+
+    $ db-migrate
+
+### As local module
+
+Want to use db-migrate as local module?
+
+    $ npm install db-migrate
+
+DB-Migrate is now available to you via:
+
+    $ node node_modules/db-migrate/bin/db-migrate
