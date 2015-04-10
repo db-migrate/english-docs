@@ -45,3 +45,27 @@ branch to rebase against it.
 
  * You should pull changes from the master project regularly and rebase against
 them to make your own life easier!
+
+## The Developer getting started
+
+Just as the user, we want you to find an easy start into the code. If you
+follow the following guide, most of your question should be resolved before
+they arise.
+
+### Splitted Projects
+
+To enable the best possible flexibility, db-migrate is from v0.10.x designed
+to be extendable. This is the reason why the drivers aren't anymore in the
+db-migrate project. Instead you will find them in their own.
+
+This also means everyone can create anytime a new driver, without directly
+contributing to the project. If you want that your driver is going to be
+maintained by us you have obviously to work with us and the repository to your
+driver have to enter the db-migrate organization.
+
+Ok enough introduction now, let's get you started, click one of the following
+links if you want to:
+
+  * Create your own driver
+
+  * Contribute to db-migrate itself
