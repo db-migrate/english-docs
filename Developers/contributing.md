@@ -69,3 +69,11 @@ links if you want to:
   * Create your own driver
 
   * Contribute to db-migrate itself
+
+
+### Contributing to db-migrate
+
+DB-Migrate consists out of a few parts. The migrator, seeder, drivers, usage 
+API and programable API.
+If you plan to make changes to the programable or usage API, always keep in
+mind that backwards compatibility must be ensured.
