@@ -77,3 +77,10 @@ DB-Migrate consists out of a few parts. The migrator, seeder, drivers, usage
 API and programable API.
 If you plan to make changes to the programable or usage API, always keep in
 mind that backwards compatibility must be ensured.
+
+This means, the behavior of functions may not be modified! It is possible to
+extend them to provide additional functionality, but not to change the behavior
+and thus destroying functionality.
+If you realize, you need this new behavior, create a new function and functions
+get deprecated if your new functionality is going to replace it in one of the
+next major releases.
