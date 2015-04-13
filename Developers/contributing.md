@@ -84,3 +84,11 @@ and thus destroying functionality.
 If you realize, you need this new behavior, create a new function and functions
 get deprecated if your new functionality is going to replace it in one of the
 next major releases.
+
+### Creating your own driver
+
+While you create your own driver, you've got the freedom to do it without 
+binding to any existing codestyles and conventions. But keep in mind, you're
+responsible for your driver and if you want it to be officially supported by
+db-migrate, you still need to all conventions like you would do on a normal
+contribution.
