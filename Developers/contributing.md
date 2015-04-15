@@ -98,18 +98,20 @@ Ok, so let's start with the actual details!
 Before we start, make sure you have initialized a new node js project in your
 current folder. If not do this via:
 
-  $ npm init
+    $ npm init
 
 The first thing we do, is to install the base for our driver. You do this
 simply by executing the following command:
 
-  $ npm install db-migrate-base --save
+    $ npm install db-migrate-base --save
 
-Ok, now one more dependency you should always install. Bluebird, for the
+Ok, now two more dependency you should always install. Bluebird, for the
 promises. Without promises your driver probably doesn't find acceptance and
-would never be treated as official driver, by the db-migrate team.
+would never be treated as official driver, by the db-migrate team. And also
+don't forget moment, you probably need it for our dates.
 
-  $ npm install bluebird --save 
+    $ npm install bluebird --save 
+    $ npm install moment --save
 
 Great! Now it's time to create our `index.js`. We extend the base we installed
 before and overwrite or use its functionality. Take a look at the 
@@ -123,3 +125,57 @@ our extended base which is named init. To call the parent constructor, we need
 to call `this._super();` afterwards.
 
 So lets imagine we have the following example:
+
+```javascript
+var util = require('util');
+var moment = require('moment');
+var mysql = require('mysql');
+var Base = require('db-migrate-base');
+var Promise = require('bluebird');
+var log;
+var type;
+
+var internals = {};
+
+var MysqlDriver = Base.extend({
+  init: function(connection) {
+    this._super(internals);
+    this.connection = connection;
+  },
+
+  close: function(callback) {
+    this.connection.end(callback);
+  }
+
+});
+
+exports.connect = function(config, intern, callback) {
+  var db;
+
+  internals = intern;
+  log = internals.mod.log;
+  type = internals.mod.type;
+
+  if (typeof(mysql.createConnection) === 'undefined') {
+    db = config.db || new mysql.createClient(config);
+  } else {
+    db = config.db || new mysql.createConnection(config);
+  }
+  callback(null, new MysqlDriver(db));
+};
+```
+
+So you probably noticed I have defined a `log` and `type` *var* which are emtpy
+and set the value of them in the exported `connect` function. These are two
+functions/objects we get passed from db-migrate. `type` contains the standard
+datatypes of *db-migrate* and `log` can be used to log messages on the info,
+verbose, etc. channels. You may always prefer `log` over `console.log` as it
+takes also care about the current settings within db-migrate. We also store
+a reference of the internals in a local variable to access it later if needed.
+
+In our constructor `init` we pass the internals to our parent base as the first
+parameter and store the connection we got passed from our `connect`function
+within the instance.
+The next step is to override the close function, which either returns a promise
+or calls the callback. We always provide both possibilities in db-migrate, you
+should do this in your driver, too.
