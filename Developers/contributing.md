@@ -92,3 +92,34 @@ binding to any existing codestyles and conventions. But keep in mind, you're
 responsible for your driver and if you want it to be officially supported by
 db-migrate, you still need to all conventions like you would do on a normal
 contribution.
+
+Ok, so let's start with the actual details!
+
+Before we start, make sure you have initialized a new node js project in your
+current folder. If not do this via:
+
+  $ npm init
+
+The first thing we do, is to install the base for our driver. You do this
+simply by executing the following command:
+
+  $ npm install db-migrate-base --save
+
+Ok, now one more dependency you should always install. Bluebird, for the
+promises. Without promises your driver probably doesn't find acceptance and
+would never be treated as official driver, by the db-migrate team.
+
+  $ npm install bluebird --save 
+
+Great! Now it's time to create our `index.js`. We extend the base we installed
+before and overwrite or use its functionality. Take a look at the 
+[base driver](https://github.com/db-migrate/db-migrate-base/blob/master/index.js)
+to get an overview, what is actually available from the beginning. So we have
+our extended Base class, next we need to export a connect method in which we
+initialize our driver and return an instance of it and also we get informations
+from db-migrate, such as version information and functionality we can use.
+We may also want to create constructor, this is done by defining a function in
+our extended base which is named init. To call the parent constructor, we need
+to call `this._super();` afterwards.
+
+So lets imagine we have the following example:
