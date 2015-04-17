@@ -113,6 +113,8 @@ don't forget moment, you probably need it for our dates.
     $ npm install bluebird --save 
     $ npm install moment --save
 
+#### Ctor and co.
+
 Great! Now it's time to create our `index.js`. We extend the base we installed
 before and overwrite or use its functionality. Take a look at the 
 [base driver](https://github.com/db-migrate/db-migrate-base/blob/master/index.js)
@@ -165,6 +167,8 @@ exports.connect = function(config, intern, callback) {
 };
 ```
 
+#### Running sql
+
 So you probably noticed I have defined a `log` and `type` *var* which are emtpy
 and set the value of them in the exported `connect` function. These are two
 functions/objects we get passed from db-migrate. `type` contains the standard
@@ -179,3 +183,198 @@ within the instance.
 The next step is to override the close function, which either returns a promise
 or calls the callback. We always provide both possibilities in db-migrate, you
 should do this in your driver, too.
+
+The next things we need to do, to have the very basic functionality, is to give
+our driver the to actually control the migrations table, such as reading from, 
+writing to, deleting from and creating the migrations table. So first of all,
+we need to override the `all` and `runSql` methods.
+`all` is similar to `runSql`, but runs always, even if dry-run is active!
+
+```javascript
+  runSql: function() {
+
+    var self = this;
+    var args = this._makeParamArgs(arguments);
+    var callback = args.pop();
+    log.sql.apply(null, arguments);
+    if(internals.dryRun) {
+      return callback();
+    }
+
+    return new Promise(function(resolve, reject) {
+      args.push(function(err, data) {
+        return (err ? reject(err) : resolve(data));
+      });
+
+      self.connection.query.apply(self.connection, args);
+    }).nodeify(callback);
+  },
+
+  _makeParamArgs: function(args) {
+    var params = Array.prototype.slice.call(args);
+    var sql = params.shift();
+    var callback = params.pop();
+
+    if (params.length > 0 && Array.isArray(params[0])) {
+      params = params[0];
+    }
+    return [sql, params, callback];
+  },
+
+  all: function() {
+    var args = this._makeParamArgs(arguments);
+    return this.connection.query.apply(this.connection, args);
+  },
+```
+
+#### Provide migration capabilities
+
+Now we have these, we need our migration methods. First of all, the one method
+which needs always to be executed, even while a dry-run is running. The method
+is called `allLoadedMigrations` and returns as the name says all already loaded
+migrations.
+
+**Attention! ALWAYS** provide a proper quoting through your driver, the 
+community and db-migrate relies on having an automatic quoting!
+
+
+```javascript
+  /**
+   * Queries the migrations table
+   *
+   * @param callback
+   */
+  allLoadedMigrations: function(callback) {
+    var sql = 'SELECT * FROM `' + internals.migrationTable + '` ORDER BY run_on DESC, name DESC';
+    this.all(sql, callback);
+  },
+```
+
+Ok, now we can differenciate between already loaded migrations and not executed
+ones. Great! Now we provide the ability to delete them `deleteMigration` and 
+add them `addMigrationRecord`
+
+```javascript
+  addMigrationRecord: function (name, callback) {
+    var formattedDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    this.runSql('INSERT INTO `' + internals.migrationTable + '` (`name`, `run_on`) VALUES (?, ?)', [name, formattedDate], callback);
+  },
+
+  /**
+   * Deletes a migration
+   *
+   * @param migrationName   - The name of the migration to be deleted
+   * @param callback
+   */
+  deleteMigration: function(migrationName, callback) {
+    var sql = 'DELETE FROM `' + internals.migrationTable + '` WHERE name = ?';
+    this.runSql(sql, [migrationName], callback);
+  },
+```
+
+#### Example of basic driver
+
+Ok, now we have a full functional driver. Currently we can only execute raw
+sql within our migrations, if using this driver, but db-migrate has now all
+functionality it needs to work properly. Our driver looks now like the 
+following: 
+
+```javascrip
+var util = require('util');
+var moment = require('moment');
+var mysql = require('mysql');
+var Base = require('db-migrate-base');
+var Promise = require('bluebird');
+var log;
+var type;
+
+var internals = {};
+
+var MysqlDriver = Base.extend({
+  init: function(connection) {
+    this._super(internals);
+    this.connection = connection;
+  },
+
+  addMigrationRecord: function (name, callback) {
+    var formattedDate = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    this.runSql('INSERT INTO `' + internals.migrationTable + '` (`name`, `run_on`) VALUES (?, ?)', [name, formattedDate], callback);
+  },
+
+  runSql: function() {
+
+    var self = this;
+    var args = this._makeParamArgs(arguments);
+    var callback = args.pop();
+    log.sql.apply(null, arguments);
+    if(internals.dryRun) {
+      return callback();
+    }
+
+    return new Promise(function(resolve, reject) {
+      args.push(function(err, data) {
+        return (err ? reject(err) : resolve(data));
+      });
+
+      self.connection.query.apply(self.connection, args);
+    }).nodeify(callback);
+  },
+
+  _makeParamArgs: function(args) {
+    var params = Array.prototype.slice.call(args);
+    var sql = params.shift();
+    var callback = params.pop();
+
+    if (params.length > 0 && Array.isArray(params[0])) {
+      params = params[0];
+    }
+    return [sql, params, callback];
+  },
+
+  all: function() {
+    var args = this._makeParamArgs(arguments);
+    return this.connection.query.apply(this.connection, args);
+  },
+
+  /**
+   * Queries the migrations table
+   *
+   * @param callback
+   */
+  allLoadedMigrations: function(callback) {
+    var sql = 'SELECT * FROM `' + internals.migrationTable + '` ORDER BY run_on DESC, name DESC';
+    this.all(sql, callback);
+  },
+
+  /**
+   * Deletes a migration
+   *
+   * @param migrationName   - The name of the migration to be deleted
+   * @param callback
+   */
+  deleteMigration: function(migrationName, callback) {
+    var sql = 'DELETE FROM `' + internals.migrationTable + '` WHERE name = ?';
+    this.runSql(sql, [migrationName], callback);
+  },
+
+  close: function(callback) {
+    this.connection.end(callback);
+  }
+
+});
+
+exports.connect = function(config, intern, callback) {
+  var db;
+
+  internals = intern;
+  log = internals.mod.log;
+  type = internals.mod.type;
+
+  if (typeof(mysql.createConnection) === 'undefined') {
+    db = config.db || new mysql.createClient(config);
+  } else {
+    db = config.db || new mysql.createConnection(config);
+  }
+  callback(null, new MysqlDriver(db));
+};
+```
