@@ -85,7 +85,7 @@ If you realize, you need this new behavior, create a new function and functions
 get deprecated if your new functionality is going to replace it in one of the
 next major releases.
 
-### Creating your own driver
+## Creating your own driver
 
 While you create your own driver, you've got the freedom to do it without 
 binding to any existing codestyles and conventions. But keep in mind, you're
@@ -270,7 +270,69 @@ add them `addMigrationRecord`
     var sql = 'DELETE FROM `' + internals.migrationTable + '` WHERE name = ?';
     this.runSql(sql, [migrationName], callback);
   },
+
+  createTable: function(tableName, options, callback) {
+    log.verbose('creating table:', tableName);
+    var columnSpecs = options,
+        tableOptions = {};
+
+    if (options.columns !== undefined) {
+      columnSpecs = options.columns;
+      delete options.columns;
+      tableOptions = options;
+    }
+
+    var ifNotExistsSql = "";
+    if(tableOptions.ifNotExists) {
+      ifNotExistsSql = "IF NOT EXISTS";
+    }
+
+    var primaryKeyColumns = [];
+    var columnDefOptions = {
+      emitPrimaryKey: false
+    };
+
+    for (var columnName in columnSpecs) {
+      var columnSpec = this.normalizeColumnSpec(columnSpecs[columnName]);
+      columnSpecs[columnName] = columnSpec;
+      if (columnSpec.primaryKey) {
+        primaryKeyColumns.push(columnName);
+      }
+    }
+
+    var pkSql = '';
+    if (primaryKeyColumns.length > 1) {
+      pkSql = util.format(', PRIMARY KEY (`%s`)', primaryKeyColumns.join('`, `'));
+    } else {
+      columnDefOptions.emitPrimaryKey = true;
+    }
+
+    var columnDefs = [];
+    var foreignKeys = [];
+
+    for (var columnName in columnSpecs) {
+      var columnSpec = columnSpecs[columnName];
+      var constraint = this.createColumnDef(columnName, columnSpec, columnDefOptions, tableName);
+
+      columnDefs.push(constraint.constraints);
+      if (constraint.foreignKey)
+        foreignKeys.push(constraint.foreignKey);
+    }
+
+    var sql = util.format('CREATE TABLE %s `%s` (%s%s)', ifNotExistsSql, tableName, columnDefs.join(', '), pkSql);
+
+    return this.runSql(sql)
+    .then(function()
+    {
+
+        return this.recurseCallbackArray(foreignKeys);
+    }.bind(this)).nodeify(callback);
+  },
 ```
+
+You might noticed we also added the createTable method already. This is because
+of the `createMigrationsTable` method, which utilize this method to create the
+migrations table.
 
 #### Example of basic driver
 
@@ -355,6 +417,64 @@ var MysqlDriver = Base.extend({
   deleteMigration: function(migrationName, callback) {
     var sql = 'DELETE FROM `' + internals.migrationTable + '` WHERE name = ?';
     this.runSql(sql, [migrationName], callback);
+  },
+
+  createTable: function(tableName, options, callback) {
+    log.verbose('creating table:', tableName);
+    var columnSpecs = options,
+        tableOptions = {};
+
+    if (options.columns !== undefined) {
+      columnSpecs = options.columns;
+      delete options.columns;
+      tableOptions = options;
+    }
+
+    var ifNotExistsSql = "";
+    if(tableOptions.ifNotExists) {
+      ifNotExistsSql = "IF NOT EXISTS";
+    }
+
+    var primaryKeyColumns = [];
+    var columnDefOptions = {
+      emitPrimaryKey: false
+    };
+
+    for (var columnName in columnSpecs) {
+      var columnSpec = this.normalizeColumnSpec(columnSpecs[columnName]);
+      columnSpecs[columnName] = columnSpec;
+      if (columnSpec.primaryKey) {
+        primaryKeyColumns.push(columnName);
+      }
+    }
+
+    var pkSql = '';
+    if (primaryKeyColumns.length > 1) {
+      pkSql = util.format(', PRIMARY KEY (`%s`)', primaryKeyColumns.join('`, `'));
+    } else {
+      columnDefOptions.emitPrimaryKey = true;
+    }
+
+    var columnDefs = [];
+    var foreignKeys = [];
+
+    for (var columnName in columnSpecs) {
+      var columnSpec = columnSpecs[columnName];
+      var constraint = this.createColumnDef(columnName, columnSpec, columnDefOptions, tableName);
+
+      columnDefs.push(constraint.constraints);
+      if (constraint.foreignKey)
+        foreignKeys.push(constraint.foreignKey);
+    }
+
+    var sql = util.format('CREATE TABLE %s `%s` (%s%s)', ifNotExistsSql, tableName, columnDefs.join(', '), pkSql);
+
+    return this.runSql(sql)
+    .then(function()
+    {
+
+        return this.recurseCallbackArray(foreignKeys);
+    }.bind(this)).nodeify(callback);
   },
 
   close: function(callback) {
