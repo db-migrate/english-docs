@@ -333,6 +333,7 @@ add them `addMigrationRecord`
 You might noticed we also added the createTable method already. This is because
 of the `createMigrationsTable` method, which utilize this method to create the
 migrations table.
+I will leave this aside for now, we will get here later again.
 
 #### Example of basic driver
 
@@ -340,6 +341,9 @@ Ok, now we have a full functional driver. Currently we can only execute raw
 sql within our migrations, if using this driver, but db-migrate has now all
 functionality it needs to work properly. Our driver looks now like the 
 following: 
+
+**Note:** This is not a complete version of a working driver. Please
+follow the tutorial until the end.
 
 ```javascrip
 var util = require('util');
