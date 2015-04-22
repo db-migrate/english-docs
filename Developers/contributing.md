@@ -502,3 +502,59 @@ exports.connect = function(config, intern, callback) {
   callback(null, new MysqlDriver(db));
 };
 ```
+
+#### Standard API
+
+Now that we have a really basic driver, which is only capable of creating the
+migrations table and adding/deleting migration records.
+
+Now let us add some functionality of the standard api. Let's start with a 
+question.
+
+Does our driver support transactions?
+
+No?
+
+Ok, go ahead and skip to the next part. You don't need to do anything.
+
+Yes?
+
+Fine, the next chapter is just for you!
+
+#### Transactions
+
+To be able to start a transaction and commit it on the end of the migration,
+our driver needs obviously the possibility to support this.
+
+This is as simple as adding this two methods:
+
+```javascript
+  startMigration: function(cb){
+
+    var self = this;
+
+    if(!internals.notansactions) {
+
+      return this.runSql('SET AUTOCOMMIT=0;')
+             .then(function() {
+                return self.runSql('START TRANSACTION;');
+            })
+             .nodeify(cb);
+    }
+    else
+      return Promise.resolve().nodeify(cb);
+  },
+
+  endMigration: function(cb){
+
+    if(!internals.notransactions) {
+
+      return this.runSql('COMMIT;').nodeify(cb);
+    }
+    else
+      return Promise.resolve(null).nodeify(cb);
+  },
+``` 
+
+If you don't have transactions you can omit these methods, then the default no
+transaction methods are going to be used.
