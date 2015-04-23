@@ -558,3 +558,48 @@ This is as simple as adding this two methods:
 
 If you don't have transactions you can omit these methods, then the default no
 transaction methods are going to be used.
+
+#### Datatypes
+
+Ok lets continue with adding the drivers interpretation of our datatypes. We
+create a new method `mapDataType` and check wich value the spec.type value has
+got. After we're done we call the parent method of this, which applies 
+additional default behavior. Take a look at the base driver if you want to know
+which exactly these are.
+
+```javascript
+  mapDataType: function(spec) {
+    var len;
+    switch(spec.type) {
+      case type.TEXT:
+        len = parseInt(spec.length, 10) || 1000;
+        if(len > 16777216) {
+          return 'LONGTEXT';
+        }
+        if(len > 65536) {
+          return 'MEDIUMTEXT';
+        }
+        if(len > 256) {
+          return 'TEXT';
+        }
+        return 'TINYTEXT';
+      case type.DATE_TIME:
+        return 'DATETIME';
+      case type.BLOB:
+        len = parseInt(spec.length, 10) || 1000;
+        if(len > 16777216) {
+          return 'LONGBLOB';
+        }
+        if(len > 65536) {
+          return 'MEDIUMBLOB';
+        }
+        if(len > 256) {
+          return 'BLOB';
+        }
+        return 'TINYBLOB';
+      case type.BOOLEAN:
+        return 'TINYINT(1)';
+    }
+    return this._super(spec.type);
+  },
+```
