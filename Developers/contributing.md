@@ -603,3 +603,11 @@ which exactly these are.
     return this._super(spec.type);
   },
 ```
+
+#### The real driver
+
+Now that we have the basic driver, it is time to create a concept for our
+new driver.
+First of all, what are we going to do? Are we creating a driver for a
+relational schema, or a NoSQL one? If we're go for the relational one we
+need capabilities like foreignKeys, when we go for the NoSQL one we don't.
