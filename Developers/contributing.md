@@ -611,3 +611,12 @@ new driver.
 First of all, what are we going to do? Are we creating a driver for a
 relational schema, or a NoSQL one? If we're go for the relational one we
 need capabilities like foreignKeys, when we go for the NoSQL one we don't.
+
+You can get some orientation for both by viewing existing drivers, like the one
+for mysql, or the one for mongodb. But you also have to determine what features
+you need to be supported. Check if this is met by the standardized requirements
+of the API you're currently writing your driver for. Or if you need, or want
+additional behavior. If the latter is the case, you also need to provide your
+own documentation. Otherwise the users wont know about what your driver do, 
+also the db-migrate project wont ever accept your driver as an official one if
+it is not documented.
