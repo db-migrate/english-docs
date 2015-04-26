@@ -649,3 +649,9 @@ install your driver by
 can use it from that point. Your driver would be available from the config with
 your name without the prefix. So you configure as name awesome, not 
 db-migrate-awesome.
+
+#### Finish?
+
+So are we done yet? Well no, we aren't. You have a new driver, but an untested
+one. It is going to happen, what you've done is not completely free from bugs.
+So rule number one is, **write tests**!
