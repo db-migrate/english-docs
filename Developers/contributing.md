@@ -620,3 +620,12 @@ additional behavior. If the latter is the case, you also need to provide your
 own documentation. Otherwise the users wont know about what your driver do, 
 also the db-migrate project wont ever accept your driver as an official one if
 it is not documented.
+
+At least you have to follow one rule:
+Always provide the complete capability which is defined by the standard API of
+the Schema you're working on. For example you always need to provide an
+addColumn method, on the other side there are things you can provide, but you
+don't have to. For example transactions, if you don't have transactions, you
+can't implement them, obviously. However, if you can't support a feature
+defined by this standard API, thats often the case for transactions for example
+you should outline this in your documentation, so the user is warned about it.
