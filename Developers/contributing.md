@@ -629,3 +629,23 @@ don't have to. For example transactions, if you don't have transactions, you
 can't implement them, obviously. However, if you can't support a feature
 defined by this standard API, thats often the case for transactions for example
 you should outline this in your documentation, so the user is warned about it.
+
+#### Publishing your driver
+
+Ok, you're finally this far?
+Great! You did some awesome work and now you want to publish it. But how to do
+so?
+
+It's as easy as publishing a normal npm module, the only requirment is the
+name! To make other users to be able to use your driver, first choose a name
+for your driver. You have one? Ok, now go to npm and check if your driver name
+was already taken, or if you can use it. Search with the term db-migrate-name.
+If it is not taken, then name your project in your package.json with your name
+and the db-migrate- prefix and publish it. And you're done, now users that
+install your driver by
+
+    $ npm install -g db-migrate-awesome
+
+can use it from that point. Your driver would be available from the config with
+your name without the prefix. So you configure as name awesome, not 
+db-migrate-awesome.
