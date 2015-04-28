@@ -655,3 +655,12 @@ db-migrate-awesome.
 So are we done yet? Well no, we aren't. You have a new driver, but an untested
 one. It is going to happen, what you've done is not completely free from bugs.
 So rule number one is, **write tests**!
+
+#### Maintaining your driver
+
+Ok finally we're done with that kind of things. Our driver is now tested, and
+probably it works like it should. Now we can wait for user feedback and we all
+know this is the greatest thing about open source. The community reports you
+bugs you didn't mentoined and also come with ideas, to improve your driver.
+Step by step your driver becomes more powerful, but keep the next hints in 
+mind.
