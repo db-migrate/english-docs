@@ -664,3 +664,11 @@ know this is the greatest thing about open source. The community reports you
 bugs you didn't mentoined and also come with ideas, to improve your driver.
 Step by step your driver becomes more powerful, but keep the next hints in 
 mind.
+
+If a user opens an issue to propagate his idea about a maybe awesome feature,
+always keep in mind, your driver wont be accepted anymore if you loose the
+focus. We have a migrator and a seeder, so if the user want a feature think
+about, where does it fit. Does it even fit or does this have nothing todo with
+the migrator itself. Sometimes you have to decline feature requests or even
+pull requests, because they doesn't fit or actually have nothing to do with
+each other.  
