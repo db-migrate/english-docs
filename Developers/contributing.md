@@ -671,4 +671,10 @@ focus. We have a migrator and a seeder, so if the user want a feature think
 about, where does it fit. Does it even fit or does this have nothing todo with
 the migrator itself. Sometimes you have to decline feature requests or even
 pull requests, because they doesn't fit or actually have nothing to do with
-each other.  
+each other.
+
+You say this sounds weird?
+Yes it is, but do we want a bloated API that covers everything even if this
+doesn't belongs to what the original product is described of?
+Clearly not, following this advices doesn't only help you to make your driver
+an offical accepted one, it also helps keeping the project structured.
