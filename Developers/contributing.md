@@ -656,6 +656,10 @@ So are we done yet? Well no, we aren't. You have a new driver, but an untested
 one. It is going to happen, what you've done is not completely free from bugs.
 So rule number one is, **write tests**!
 
+So how to test our driver, ok here comes the awesome part. There is a test
+suite for the default standardized API you can use, this is quite easy and to
+do so and find instructions of the usage follow this [link](coming soon).
+
 #### Maintaining your driver
 
 Ok finally we're done with that kind of things. Our driver is now tested, and
