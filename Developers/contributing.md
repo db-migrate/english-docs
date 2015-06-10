@@ -656,9 +656,13 @@ So are we done yet? Well no, we aren't. You have a new driver, but an untested
 one. It is going to happen, what you've done is not completely free from bugs.
 So rule number one is, **write tests**!
 
-So how to test our driver, ok here comes the awesome part. There is a test
-suite for the default standardized API you can use, this is quite easy and to
-do so and find instructions of the usage follow this [link](coming soon).
+So how to test our driver? A good start would be to take a look at existing 
+tests of other drivers. They're bascially much the same and have small
+differences, like datatypes, return types and so on. Most of the time you
+should be able to take a copy of an existing test suite and make changes to it
+to ensure completeness and validity.
+You're also free to choose the framework which you're going to use when testing 
+your driver, to note offical drivers use `vows` or `lab`.
 
 #### Maintaining your driver
 
