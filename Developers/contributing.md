@@ -66,12 +66,12 @@ driver have to enter the db-migrate organization.
 Ok enough introduction now, let's get you started, click one of the following
 links if you want to:
 
-  * Create your own driver
+  * [Create your own driver](#creating-your-own-driver)
 
-  * Contribute to db-migrate itself
+  * [Contribute to db-migrate itself](#contributing-to-db-migrate)
 
 
-### Contributing to db-migrate
+## Contributing to db-migrate
 
 DB-Migrate consists out of a few parts. The migrator, seeder, drivers, usage 
 API and programable API.
@@ -84,6 +84,20 @@ and thus destroying functionality.
 If you realize, you need this new behavior, create a new function and functions
 get deprecated if your new functionality is going to replace it in one of the
 next major releases.
+
+## Functionality description of db-migrate
+
+### Start developing on db-migrate
+
+At first take a look at the source, there should be an available documentation
+for the most of the functions. If not you can naturally ask in our chat how 
+things work, this is also the way you ensure that this component gets 
+documented afterwards.
+We currently do not create a separate documentation out of the code docs.
+
+### Promisify everything
+
+The functionality description of db-migrate 
 
 ## Creating your own driver
 
