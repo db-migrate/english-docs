@@ -87,6 +87,61 @@ next major releases.
 
 ## Functionality description of db-migrate
 
+DB-Migrate is a database toolset which provides the ability to alter the schema
+of any database system of which a db-migrate driver exists. This includes
+creating and deleting tables and databases as all standard operations, such as
+changing an existing column, deleting and them and so on.
+DB-Migrate differenciate between migrations and seeding operations and strictly
+provides only the interface which should be available to those. Therefore there
+may not added new functionality to those, that does not fit their description.
+An interface might only contain functionality does not fit this restriction, 
+because of backward compatibility and must be deprecated and marked to be 
+removed on the next major release.
+
+The descriptions of those are defined as of the following.
+
+### Description of the migrator interface
+The migrator interface provides the ability to handle all abilities which are 
+needed to successfully modify the DD of your tables.
+This includes all DDL methods provided by SQL naturally.
+
+### Description of the seeder interface
+
+The seeder interface provides the ability to handle all operations, that
+are not DDL specific and thus not a migration.
+
+These operations are currently, but not limited to:
+
+inserting data
+removing data
+searching data
+truncating whole tables
+
+This functionality is provided in two ways to the user. First there are
+traditional seeder. You can call them whenever you want, and how often
+you want. This results into a use case, that make seeders might only used
+for development and not to use them in a deployment process.
+
+Here the second way of usage steps in, the version controlled seeders, in
+short VC Seeds.
+There is technically no big difference between them, except the following
+details:
+
+A VC Seed can be called from a migration, via seed.execute and seed.link. A
+normal seeder can not. Also A VC Seeder has a down and up function, like
+the way the migrations work, the static instead has a truncate function,
+which gets called before the seed function. As a seeder often wants to
+truncate tables or just delete data from a table.
+And last but not least, a VC Seed can not be executed if it was executed
+before, you need to roll back it first, it's in short handled like
+migrations are. A normal seed can be executed just as often as you want
+without rollback your data at any time.
+
+To note: If you rollback a migration, linked to a seeder, db-migrate will
+also rollback the seed. This is also a reason why you can't rollback a
+specific migration, you would going to break that much, you probably loose
+a bunch of valueable time.
+
 ### Start developing on db-migrate
 
 At first take a look at the source, there should be an available documentation
@@ -97,7 +152,12 @@ We currently do not create a separate documentation out of the code docs.
 
 ### Promisify everything
 
-The functionality description of db-migrate 
+The functionality description of db-migrate describes that every function of
+db-migrate which is async should be a promise, but if part of a driver, because
+of backwards compatibility, also should accept a callback function as last 
+parameter.
+
+The used promise library must be bluebird.
 
 ## Creating your own driver
 
