@@ -91,6 +91,23 @@ DB-Migrate is a database toolset which provides the ability to alter the schema
 of any database system of which a db-migrate driver exists. This includes
 creating and deleting tables and databases as all standard operations, such as
 changing an existing column, deleting and them and so on.
+
+While providing this abilities, DB-Migrate does strictly only provide the 
+ability to represent a state of the database at a given time. It is not a
+full featured database management tool and wont provide the ability to execute
+operations which are not related to the concept of version controlling changes
+to the schema of a database. This excludes for example the ability to create a
+dump of the database or the schema. 
+To note: If you want to archive the latter one you might take a look at 
+[umigrate](https://travis-ci.org/wzrdtales/node-ultimate-migrate) which is the 
+partner project of db-migrate which adds the ability to generate migrations out
+of a given schema and also provides the ability to generate migrations for just
+the differences between existing migrations and the current schema.
+
+DB-Migrate is strictly requires to support standard data definition operations.
+This also applies to NoSQL Schemas, where for example in the case of mongodb
+a cóllection is treated as the equivalent to a table.
+
 DB-Migrate differenciate between migrations and seeding operations and strictly
 provides only the interface which should be available to those. Therefore there
 may not added new functionality to those, that does not fit their description.
@@ -112,10 +129,10 @@ are not DDL specific and thus not a migration.
 
 These operations are currently, but not limited to:
 
-inserting data
-removing data
-searching data
-truncating whole tables
+ * inserting data
+ * removing data
+ * searching data
+ * truncating whole tables
 
 This functionality is provided in two ways to the user. First there are
 traditional seeder. You can call them whenever you want, and how often
