@@ -1,5 +1,6 @@
 site_name: db-migrate
 pages:
+- [search.html, Search through the docs]
 - [index.md, Home]
 - [help.md, 'Helping db-migrate']
 - [Getting Started/installation.md, 'Getting Started', Installation]
