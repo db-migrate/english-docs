@@ -1,5 +1,6 @@
 site_name: db-migrate
 pages:
+- [search.html, Search through the docs]
 - [index.md, Home]
 - [help.md, 'Helping db-migrate']
 - [Getting Started/installation.md, 'Getting Started', Installation]
@@ -15,4 +16,3 @@ pages:
 docs_dir: .
 repo_url: https://github.com/db-migrate/english-docs
 theme: readthedocs
-base_url: https://umigrate.readthedocs.org/projects/db-migrate/en/v0.10.x/
