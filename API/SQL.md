@@ -295,7 +295,9 @@ __Arguments__
 
 ### all(sql, [params,] callback)
 
-Execute a select statement
+Execute a select statement, even in dry run mode. Attention, only use this if
+you know what you're doing. This can cause you issues if you're utilizing
+the dry-run mode for testings. To execute sql queries always use runSql!
 
 __Arguments__
 
