@@ -152,3 +152,10 @@ It's currently also not possible to switch the database over this config with **
   "schema": "test"
 }
 ```
+
+# Seeder Introduction
+
+This page should give you an overview, of what seeders actually are and what you
+can expect of them. To also tell some of the practices that make things easier
+for you. This is really just an overview, take a look at the API description for
+all details.
