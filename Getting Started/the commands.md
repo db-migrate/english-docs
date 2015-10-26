@@ -180,3 +180,8 @@ exports.up = function( db ) {
   return db.update( 'test', { name: 'cedric', surname: 'camelot' }, 12 );
 };
 ```
+
+This is going to update the 12th record of the table test, which has got a new
+name cedric camelot. There are more examples in our example project, which you
+can find [here](). For an overview of all available options and helpers take a
+look at the [API Description]().
