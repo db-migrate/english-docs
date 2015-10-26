@@ -159,3 +159,24 @@ This page should give you an overview, of what seeders actually are and what you
 can expect of them. To also tell some of the practices that make things easier
 for you. This is really just an overview, take a look at the API description for
 all details.
+
+# General operations
+
+The seeder consists of method such as update, insert and data manipulation
+methods.
+
+## update( table, data, searchclause/id )
+
+While selecting data, that might not belong to your table yet, there are
+different kinds of helpers, that are going to help you, while propagating your
+database.
+
+There are update helper and a defined where clause helper, included in functions
+like select or update. An example would be this:
+
+```javascript
+exports.up = function( db ) {
+
+  return db.update( 'test', { name: 'cedric', surname: 'camelot' }, 12 );
+};
+```
