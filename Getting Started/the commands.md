@@ -185,3 +185,19 @@ This is going to update the 12th record of the table test, which has got a new
 name cedric camelot. There are more examples in our example project, which you
 can find [here](). For an overview of all available options and helpers take a
 look at the [API Description]().
+
+# select( table, data, searchclause/id )
+
+This helper is an option for you to use, if you want your seeders to be generic
+and usable across different DBMS's. No matter if NoSQL or SQL or NewSQL, it
+should behave similar in every case.
+
+```javascript
+exports.up = function( up ) {
+
+  return db.select( 'test', [ 'id', 'name', 'surname' ], { bff: 12 } );
+};
+```
+
+This example would result in the `id`, `name` and `surname` of the guys who have
+number `12` as their bff.
