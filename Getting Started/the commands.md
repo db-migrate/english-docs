@@ -201,3 +201,22 @@ exports.up = function( up ) {
 
 This example would result in the `id`, `name` and `surname` of the guys who have
 number `12` as their bff.
+
+# Common Helpers
+
+These helpers are here for your when there are cases when you're working with
+db-migrate and db-migrate could help you accomplishing your work more efficiently and more easy.
+
+## _l( options )
+
+The lookup helper, a common task is that you have the value, but you do not have
+necessarily the id of this value. This id might change for some reason, also it should better never ever change but that by side, or you just really do not know it. As far as this column is referencing a value in another table, this helper is the one you are looking for.
+
+## Options object
+
+- t (shortcut: t) - DB to lookup the value
+ - defaults only on compliance to db guidelines
+- data column (shortcut: c) - Column with the corresponding value
+ - defaults to 'value'
+- id column (shortcut: k) - corresponding id column
+ - defaults to 'id'
