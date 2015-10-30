@@ -138,13 +138,15 @@ Another feature of scopes are multiple configurations. See the point below.
 
 ### Scope Configuration
 
-You can also configure the scope to specify a sub configuration. Currently you can only define database and schema within this config.
+You can also configure the scope to specify a sub configuration. Currently you
+can only define database and schema within this config.
 
 This config file is used to tell db-migrate to switch to the `database` or
 `schema`. Databases is used for most databases, except **postgres**
 which needs the schema variable.
 
-It's currently also not possible to switch the database over this config with **postgres**.
+It's currently also not possible to switch the database over this config with
+**postgres**.
 
 ```json
 {
@@ -205,12 +207,16 @@ number `12` as their bff.
 # Common Helpers
 
 These helpers are here for your when there are cases when you're working with
-db-migrate and db-migrate could help you accomplishing your work more efficiently and more easy.
+db-migrate and db-migrate could help you accomplishing your work more
+efficiently and more easy.
 
 ## _l( options )
 
 The lookup helper, a common task is that you have the value, but you do not have
-necessarily the id of this value. This id might change for some reason, also it should better never ever change but that by side, or you just really do not know it. As far as this column is referencing a value in another table, this helper is the one you are looking for.
+necessarily the id of this value. This id might change for some reason, also it
+should better never ever change but that by side, or you just really do not know
+it. As far as this column is referencing a value in another table, this helper
+is the one you are looking for.
 
 ## Options object
 
