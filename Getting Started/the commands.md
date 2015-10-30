@@ -226,3 +226,9 @@ is the one you are looking for.
  - defaults to 'value'
 - id column (shortcut: k) - corresponding id column
  - defaults to 'id'
+
+# DB-Migrate - DB Guidelines
+
+There are some common practices that makes the work with DB-Migrate even easier.
+These practices fit with already known best practices, that are not DB-Migrate
+related. Also you can adjust many things to work with different standards.
