@@ -261,3 +261,17 @@ exports.up = function( db ) {
   } );
 };
 ```
+
+All of these, except `arch_id` are going to resolve to the value from the
+`test_db_arch` table, referenced as id column. You can however also make
+`arch_id` of this example work, you can register common shorthands. There are
+many examples where you have columns of tables with long names, like
+pseudo_type. Many do name their columns like `pt_id`, you can now register this
+column via:
+
+    db-migrate register alias pt pseudo_type
+
+This makes you unable to use a table named `pt`, thus you really should know
+what you're doing. Also to mention, it is recommended to have as less aliases
+as possible, only use them if they're common and used all over your project and
+by this means known to be used in this project.
