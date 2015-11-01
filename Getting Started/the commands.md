@@ -232,3 +232,32 @@ is the one you are looking for.
 There are some common practices that makes the work with DB-Migrate even easier.
 These practices fit with already known best practices, that are not DB-Migrate
 related. Also you can adjust many things to work with different standards.
+
+# Column references
+
+Some may always call them foreign keys... However, you can lookup without
+ctually providing a database.
+
+If a column reference is referencing a value in the table test_db_arch, you
+would name the column test_db_arch_id.
+
+Beside this you can also do things like:
+ref_test_db_arch_attribute
+test_db_arch_attribute_fk
+
+This would receive the value from the table test_db_arch and get the value from
+the attribute column in this table. We always default the id column to be named
+like `id`, there is no shorthand via the naming. Instead you can design a seed
+like the following example:
+
+```javascript
+exports.up = function( db ) {
+
+  return db.insert( 'test', {
+    ref_test_db_arch_attribute: _l( { id: 'identifier' } ),
+    test_db_arch_id: _l(),
+    common_value: _l( { t: 'test_db_arch' } ),
+    arch_id: _()
+  } );
+};
+```
