@@ -275,3 +275,10 @@ This makes you unable to use a table named `pt`, thus you really should know
 what you're doing. Also to mention, it is recommended to have as less aliases
 as possible, only use them if they're common and used all over your project and
 by this means known to be used in this project.
+
+## Change management
+
+One of the most important things is to know when who is updating why what where,
+if you do not known exactly what happens in parts of your project you're never
+going to be able to do such things as zero downtime deployments or automation
+of the deployment in general.
