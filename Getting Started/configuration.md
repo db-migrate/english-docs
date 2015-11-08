@@ -62,6 +62,31 @@ You can pass the -e or --env option to db-migrate to select the environment you 
 
 The above will run all migrations that haven't yet been run in the prod environment, grabbing the settings from config/database.json.
 
+If the environment is not specified by the -e or --env option, db-migrate will look for an environment named `dev` or `developement`. You can change this default behavior with the database.json file:
+
+```javascript
+{
+  "defaultEnv": "local",
+  "local": {
+    "driver": "sqlite3",
+    "filename": ":memory:"
+  }
+}
+```
+
+In addition, the default env can also be set with an environment variable. This can be helpful if you'd like to use the `NODE_ENV` variable to select configuration:
+
+```javascript
+{
+  "defaultEnv": {"ENV": "NODE_ENV"},
+  "prod": {
+    "driver": "mysql",
+    "user": {"ENV": "PRODUCTION_USERNAME"},
+    "password": {"ENV": "PRODUCTION_PASSWORD"}
+  },
+}
+```
+
 Alternatively, you can specify a DATABASE_URL
 environment variable that will be used in place of the configuration
 file settings. This is helpful for use with Heroku.
