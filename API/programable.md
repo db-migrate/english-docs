@@ -31,3 +31,21 @@ var dbmigrate_2 = DBMigrate.getInstance(true, specialCallback);
 var dbmigrate_3 = DBMigrate.getInstance();
 dbmigrate_3.run();
 ```
+
+### getInstance(isModule, options, callback)
+
+Get an instance of the db-migrate API.
+
+__Arguments__
+
+* isModule - set true to return the API as a node module
+* options - hash of various options
+* callback - custom callback
+
+__Options__
+
+* cwd - working directory (default: process.cwd)
+* config
+  * string - location of the database.json file
+  * object - hash of [configuration](https://umigrate.readthedocs.org/projects/db-migrate/en/latest/Getting%20Started/configuration/) options
+* env - the environment to run the migrations under
