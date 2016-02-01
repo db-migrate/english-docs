@@ -1,0 +1,20 @@
+{
+  "name": "dbmigratedocs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "config.default.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "postinstall": "cp node_modules/raneto/public/bower_components public/lib -R"
+  },
+  "engines": {
+    "node": "~4.2.0"
+  },
+  "author": "Tobias Gurtzick <magic@wizardtales.com>",
+  "license": "ISC",
+  "dependencies": {
+    "raneto": "0.7.1",
+    "debug" : "2.2.0"
+  }
+}
