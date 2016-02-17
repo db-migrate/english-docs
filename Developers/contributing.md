@@ -16,7 +16,7 @@ We advise you to follow the following steps, if you plan to contribute:
 1. Choose the right project you want to contribute to, either a driver or
 db-migrate itself.
 
-2. For the repo.
+2. Fork the repo.
 
 3. Create a new branch to work with out of the master branch.
 
