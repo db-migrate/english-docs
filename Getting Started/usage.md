@@ -318,7 +318,7 @@ related. Also you can adjust many things to work with different standards.
 # Column references
 
 Some may always call them foreign keys... However, you can lookup without
-ctually providing a database.
+actually providing a database.
 
 If a column reference is referencing a value in the table test_db_arch, you
 would name the column test_db_arch_id.
