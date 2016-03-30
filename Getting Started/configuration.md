@@ -62,7 +62,7 @@ You can pass the -e or --env option to db-migrate to select the environment you 
 
 The above will run all migrations that haven't yet been run in the prod environment, grabbing the settings from config/database.json.
 
-If the environment is not specified by the -e or --env option, db-migrate will look for an environment named `dev` or `developement`. You can change this default behavior with the database.json file:
+If the environment is not specified by the -e or --env option, db-migrate will look for an environment named `dev` or `development`. You can change this default behavior with the database.json file:
 
 ```javascript
 {
