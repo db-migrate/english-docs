@@ -139,11 +139,18 @@ Another feature of scopes are multiple configurations. See the point below.
 ### Scope Configuration
 
 You can also configure the scope to specify a sub configuration. Currently you
-can only define database and schema within this config.
+can only define database and schema within this config. The file should be named 
+'config.json' and placed in scope subfolder, e.g.:
 
-This config file is used to tell db-migrate to switch to the `database` or
-`schema`. Databases is used for most databases, except **postgres**
-which needs the schema variable.
+migrations/tests/config.json
+
+This config file is used to override the `database` or `schema` setting defined 
+in database.json for a given scope. `database` is used for most databases, except 
+**postgres** which needs the `schema` variable. 
+
+Note that `database` or `schema` must still be defined in the database.json file
+in order to run `db-migrate up:all`. The value defined in database.json will be 
+used for any migrations in the default (top-level) scope.
 
 It's currently also not possible to switch the database over this config with
 **postgres**.
