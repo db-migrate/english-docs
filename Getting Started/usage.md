@@ -277,7 +277,7 @@ and usable across different DBMS's. No matter if NoSQL or SQL or NewSQL, it
 should behave similar in every case.
 
 ```javascript
-exports.up = function( up ) {
+exports.up = function( db ) {
 
   return db.select( 'test', [ 'id', 'name', 'surname' ], { bff: 12 } );
 };
