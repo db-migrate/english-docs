@@ -39,7 +39,7 @@ __Column Specs__
 
 The following options are available on column specs
 
-* type - the column data type. Supported types can be found in lib/data_type.js
+* type - the column data type. Supported types can be found in db-migrate-shared/data_type.js
 * length - the column data length, where supported
 * primaryKey - true to set the column as a primary key. Compound primary keys are supported by setting the `primaryKey` option to true on multiple columns
 * autoIncrement - true to mark the column as auto incrementing
