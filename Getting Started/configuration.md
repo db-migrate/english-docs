@@ -87,11 +87,38 @@ In addition, the default env can also be set with an environment variable. This 
 }
 ```
 
-Alternatively, you can specify a DATABASE_URL
-environment variable that will be used in place of the configuration
-file settings. This is helpful for use with Heroku.
+## DATABASE_URL
 
+Alternatively, you can specify a `DATABASE_URL` environment variable that will
+be used in place of the configuration file settings. This is helpful for use
+with Heroku.
 
+**Note**: If a database url is specified, the config file is being skipped. You
+can however also specify rc configs, where you can configure everything you can
+configure also on the CLI.
+
+## RC configs
+
+RC configs give the possibility to configure settings for more than just one
+project, as RC configs are being loaded from different directories.
+
+You can take a view over [here](https://github.com/dominictarr/rc#standards)
+where to save those configs.
+
+Most prominent locations are, the root directory where you currently execute
+db-migrate and your `HOME` directory. The file is always named .db-migraterc,
+except for some examples you can find under the link above.
+
+An example .db-migraterc config file could look like this:
+
+```json
+{
+  "sql-file": true
+}
+```
+
+This would set activate the sql mode unless you would deactivate it in your
+database.json again, which always has the highest priority.
 
 ## Important - For MySQL users
 
