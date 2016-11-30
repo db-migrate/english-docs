@@ -37,7 +37,19 @@ exports.down = function (db, callback) {
 };
 ```
 
-All you have to do is populate these, invoking `callback()` when complete, and you are ready to migrate!
+Note:  In newer versions of db-migrate, we have included a promise-based interface.  In these newer versions, the `create` command will generate a file containing the following:
+
+```javascript
+exports.up = function(db) {
+    return null;
+};
+
+exports.down = function(db) {
+    return null;
+};
+```
+
+All you have to do is populate these, invoking `callback()` or returning the result of your `db` operation when complete, and you are ready to migrate!
 
 For example:
 
@@ -47,6 +59,7 @@ For example:
 The first call creates `./migrations/20111219120000-add-pets.js`, which we can populate:
 
 ```javascript
+/* Callback-based version */
 exports.up = function (db, callback) {
   db.createTable('pets', {
     id: { type: 'int', primaryKey: true },
@@ -59,9 +72,24 @@ exports.down = function (db, callback) {
 };
 ```
 
+```javascript
+/* Promise-based version */
+exports.up = function (db) {
+  return db.createTable('pets', {
+    id: { type: 'int', primaryKey: true },
+    name: 'string'
+  });
+};
+
+exports.down = function (db) {
+  return db.dropTable('pets');
+};
+```
+
 The second creates `./migrations/20111219120005-add-owners.js`, which we can populate:
 
 ```javascript
+/* Callback-based version */
 exports.up = function (db, callback) {
   db.createTable('owners', {
     id: { type: 'int', primaryKey: true },
@@ -74,9 +102,25 @@ exports.down = function (db, callback) {
 };
 ```
 
+```javascript
+/* Promise-based version */
+exports.up = function (db) {
+  return db.createTable('owners', {
+    id: { type: 'int', primaryKey: true },
+    name: 'string'
+  });
+};
+
+exports.down = function (db) {
+  return db.dropTable('owners');
+};
+```
+
+
 Executing multiple statements against the database within a single migration requires a bit more care. You can either nest the migrations like:
 
 ```javascript
+/* Callback-based version */
 exports.up = function (db, callback) {
   db.createTable('pets', {
     id: { type: 'int', primaryKey: true },
@@ -97,6 +141,39 @@ exports.down = function (db, callback) {
     if (err) { callback(err); return; }
     db.dropTable('owners', callback);
   });
+};
+```
+
+```javascript
+/* Promise-based version */
+exports.up = function (db) {
+  return db.createTable('pets', {
+    id: { type: 'int', primaryKey: true },
+    name: 'string'
+  })
+  .then(
+    function(result) {
+      db.createTable('owners', {
+        id: { type: 'int', primaryKey: true },
+        name: 'string'
+      });
+    },
+    function(err) {
+      return;
+    }
+  );
+};
+
+exports.down = function (db) {
+  return db.dropTable('pets')
+    .then(
+      function(result) {
+        db.dropTable('owners');
+      },
+      function(err) {
+        return;
+      }
+    );
 };
 ```
 
