@@ -191,7 +191,7 @@ exports.up = function (db, callback) {
     db.createTable.bind(db, 'owners', {
       id: { type: 'int', primaryKey: true },
       name: 'string'
-    });
+    })
   ], callback);
 };
 
