@@ -2,7 +2,7 @@
 
 db-migrate supports the concept of environments. For example, you might have a dev, test, and prod environment where you need to run the migrations at different times. Environment settings are loaded from a database.json file like the one shown below:
 
-```javascript
+```json
 {
   "dev": {
     "driver": "sqlite3",
@@ -40,7 +40,7 @@ db-migrate supports the concept of environments. For example, you might have a d
 ```
 
 You can also specify environment variables in your config file by using a special notation. Here is an example:
-```javascript
+```json
 {
   "prod": {
     "driver": "mysql",
@@ -64,7 +64,7 @@ The above will run all migrations that haven't yet been run in the prod environm
 
 If the environment is not specified by the -e or --env option, db-migrate will look for an environment named `dev` or `development`. You can change this default behavior with the database.json file:
 
-```javascript
+```json
 {
   "defaultEnv": "local",
   "local": {
@@ -76,7 +76,7 @@ If the environment is not specified by the -e or --env option, db-migrate will l
 
 In addition, the default env can also be set with an environment variable. This can be helpful if you'd like to use the `NODE_ENV` variable to select configuration:
 
-```javascript
+```json
 {
   "defaultEnv": {"ENV": "NODE_ENV"},
   "prod": {
@@ -124,9 +124,9 @@ database.json again, which always has the highest priority.
 
 If you use MySQL, to be able to use multiple statements in your sql file, you have to set the property `multiple-statements: true` when creating the connection object. You can set it in your `database.json` as follows:
 
-```
+```json
 {
-    "dev": {
+  "dev": {
     "host": "localhost",
     "user": { "ENV" : "DB_USER" },
     "password" : { "ENV" : "DB_PASS" },
