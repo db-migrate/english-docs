@@ -195,7 +195,7 @@ dbm.reset()
 });
 ```
 
-## silent(isSilent)
+## silence(isSilent)
 
 Silences or unsilences logs.
 
@@ -207,7 +207,7 @@ __Examples__
 
 ```javascript
 var dbm = dbmigrate.getInstance(true);
-dbm.silent(true);
+dbm.silence(true);
 dbm.reset();
 ```
 
