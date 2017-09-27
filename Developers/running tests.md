@@ -6,6 +6,11 @@ The following command runs the vows tests.
 npm test
 ```
 
+If tests fail because of timeout you can add TIMEOUT parameter.
+```bash
+npm test -e "TIMEOUT=5000"
+```
+
 Running the tests requires a one-time setup of the **MySQL**, **MongoDB** and **Postgres** databases.
 
 ```bash
