@@ -67,6 +67,11 @@ configured migrations directory.
 
     db-migrate create anothermigration --sql-file
 
+Creates a TypeScript migration with the name anothermigration in your 
+configured migrations directory.
+
+    db-migrate create anothermigration --ts-file
+
 Creates a migration that loads sql file with the name anothermigration in your
 configured migrations directory. This is useful if your transitioning from not
 using migrations. Another way to get started with migrations, with an already
