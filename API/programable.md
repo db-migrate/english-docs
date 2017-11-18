@@ -70,6 +70,7 @@ __Options__
   * string - location of the database.json file
   * object - hash of [configuration](https://umigrate.readthedocs.org/projects/db-migrate/en/latest/Getting%20Started/configuration/) options254896 abgemeldet
 * env - the environment to run the migrations under
+* throwUncatched - Throw an error instead of calling `process.exit(1)`
 
 # Programable API
 
