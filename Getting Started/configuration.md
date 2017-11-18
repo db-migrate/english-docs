@@ -113,12 +113,15 @@ An example .db-migraterc config file could look like this:
 
 ```json
 {
-  "sql-file": true
+  "sql-file": true,
+  "configFile": "path/to/config/database.json"
 }
 ```
 
 This would set activate the sql mode unless you would deactivate it in your
 database.json again, which always has the highest priority.
+
+The `configFile` is a special rc config variable, because `config` is reserved by the `rc` module.
 
 ## Important - For MySQL users
 
