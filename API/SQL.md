@@ -50,7 +50,7 @@ The following options are available on column specs
 
 __Column ForeignKey Spec Examples__
 
-**Note:** Currently only supported together with mysql!
+**Note:** Currently only supported in mysql and pg!
 
 ```javascript
 exports.up = function(db, callback) {
