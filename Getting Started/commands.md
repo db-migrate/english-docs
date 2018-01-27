@@ -1,4 +1,4 @@
-# The commands
+# Commands
 
 In the following, we will introduce you into the basic commands you need to use
 db-migrate and unleash its power.
@@ -68,7 +68,7 @@ configured migrations directory.
     db-migrate create anothermigration --sql-file
 
 Creates a migration that loads sql file with the name anothermigration in your
-configured migrations directory. This is useful if your transitioning from not
+configured migrations directory. This is useful if you are transitioning from not
 using migrations. Another way to get started with migrations, with an already
 existing database is to use another project from wzrdtales:
 
