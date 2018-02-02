@@ -5,7 +5,7 @@ pages:
 - [help.md, 'Helping db-migrate']
 - [Getting Started/installation.md, 'Getting Started', Installation]
 - [Getting Started/configuration.md, 'Getting Started', Configuration]
-- [Getting Started/the commands.md, 'Getting Started', 'The Commands']
+- [Getting Started/commands.md, 'Getting Started', 'Commands']
 - [Getting Started/usage.md, 'Getting Started', Usage]
 - [API/generic datatypes.md, 'API', 'Generic Datatypes']
 - [API/SQL.md, 'API', 'SQL API']
