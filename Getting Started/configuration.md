@@ -95,7 +95,7 @@ file settings. This is helpful for use with Heroku.
 
 ## Important - For MySQL users
 
-If you use MySQL, to be able to use multiple statements in your sql file, you have to set the property `multiple-statements: true` when creating the connection object. You can set it in your `database.json` as follows:
+If you use MySQL, to be able to use multiple statements in your sql file, you have to set the property `multipleStatements: true` when creating the connection object. You can set it in your `database.json` as follows:
 
 ```
 {
