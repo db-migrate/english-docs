@@ -1,6 +1,6 @@
 ## Configuration
 
-db-migrate supports the concept of environments. For example, you might have a dev, test, and prod environment where you need to run the migrations at different times. Environment settings are loaded from a database.json file like the one shown below:
+db-migrate supports the concept of environments. For example, you might have a dev, test, and prod environment where you need to run the migrations at different times. Environment settings are loaded from a `database.json` file like the one shown below:
 
 ```json
 {
