@@ -18,5 +18,4 @@ nav:
       - "Contributing": Developers/contributing.md
 docs_dir: .
 repo_url: https://github.com/db-migrate/english-docs
-requirements_file: requirements.txt
 theme: readthedocs
