@@ -1,18 +1,18 @@
 site_name: db-migrate
-pages:
-- [search.html, Search through the docs]
-- [index.md, Home]
-- [help.md, 'Helping db-migrate']
-- [Getting Started/installation.md, 'Getting Started', Installation]
-- [Getting Started/configuration.md, 'Getting Started', Configuration]
-- [Getting Started/the commands.md, 'Getting Started', 'The Commands']
-- [Getting Started/usage.md, 'Getting Started', Usage]
-- [API/generic datatypes.md, 'API', 'Generic Datatypes']
-- [API/SQL.md, 'API', 'SQL API']
-- [API/NoSQL.md, 'API', 'NoSQL API']
-- [API/programable.md, 'API', 'Programable API']
-- [Developers/running tests.md, 'Developers', 'Running Tests']
-- [Developers/contributing.md, 'Developers', Contributing]
+nav:
+  - [search.html, Search through the docs]
+  - [index.md, Home]
+  - [help.md, "Helping db-migrate"]
+  - [Getting Started/installation.md, "Getting Started", Installation]
+  - [Getting Started/configuration.md, "Getting Started", Configuration]
+  - [Getting Started/the commands.md, "Getting Started", "The Commands"]
+  - [Getting Started/usage.md, "Getting Started", Usage]
+  - [API/generic datatypes.md, "API", "Generic Datatypes"]
+  - [API/SQL.md, "API", "SQL API"]
+  - [API/NoSQL.md, "API", "NoSQL API"]
+  - [API/programable.md, "API", "Programable API"]
+  - [Developers/running tests.md, "Developers", "Running Tests"]
+  - [Developers/contributing.md, "Developers", Contributing]
 docs_dir: .
 repo_url: https://github.com/db-migrate/english-docs
 theme: readthedocs
