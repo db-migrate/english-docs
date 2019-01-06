@@ -1,17 +1,20 @@
 site_name: db-migrate
 nav:
-- [search.html, Search through the docs]
-- [index.md, Home]
-- [help.md, 'Helping db-migrate']
-- [Getting Started/installation.md, 'Getting Started', Installation]
-- [Getting Started/configuration.md, 'Getting Started', Configuration]
-- [Getting Started/the commands.md, 'Getting Started', 'The Commands']
-- [Getting Started/usage.md, 'Getting Started', Usage]
-- [API/generic datatypes.md, 'API', 'Generic Datatypes']
-- [API/SQL.md, 'API', 'SQL API']
-- [API/NoSQL.md, 'API', 'NoSQL API']
-- [Developers/running tests.md, 'Developers', 'Running Tests']
-- [Developers/contributing.md, 'Developers', Contributing]
+  - Search through the docs: search.html
+  - Home: index.md
+  - "Helping db-migrate": help.md
+  - Getting Started:
+      - Installation: Getting Started/installation.md
+      - Configuration: Getting Started/configuration.md
+      - "The Commands": Getting Started/the commands.md
+      - Usage: Getting Started/usage.md
+  - API:
+      - "Generic Datatypes": API/generic datatypes.md
+      - "SQL API": API/SQL.md
+      - "NoSQL API": API/NoSQL.md
+  - Developers:
+      - "Running Tests": Developers/running tests.md
+      - Contributing: Developers/contributing.md
 docs_dir: .
 repo_url: https://github.com/db-migrate/english-docs
 theme: readthedocs
