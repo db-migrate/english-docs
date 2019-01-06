@@ -15,6 +15,6 @@ nav:
   - Developers:
       - "Running Tests": Developers/running tests.md
       - Contributing: Developers/contributing.md
-docs_dir: .
+docs_dir: docs
 repo_url: https://github.com/db-migrate/english-docs
 theme: readthedocs
