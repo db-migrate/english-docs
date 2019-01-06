@@ -1,5 +1,5 @@
 site_name: db-migrate
-pages:
+nav:
 - [search.html, Search through the docs]
 - [index.md, Home]
 - [help.md, 'Helping db-migrate']
