@@ -108,17 +108,19 @@ You can take a view over [here](https://github.com/dominictarr/rc#standards)
 where to save those configs.
 
 Most prominent locations are, the root directory where you currently execute
-db-migrate and your `HOME` directory. The file is always named .db-migraterc,
+db-migrate and your `HOME` directory. The file is always named `.db-migraterc`,
 except for some examples you can find under the link above.
 
-An example .db-migraterc config file could look like this:
+An example `.db-migraterc` config file could look like this:
 
 ```json
 {
   "sql-file": true,
-  "configFile": "path/to/config/database.json"
+  "configFile": "path/to/config/database.json",
+  "table": "new_migration_table_name"
 }
 ```
+Use `table` property in `.db-migraterc` config file to change the default name of migrations table.
 
 This would set activate the sql mode unless you would deactivate it in your
 database.json again, which always has the highest priority.
