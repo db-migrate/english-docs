@@ -143,3 +143,9 @@ If you use MySQL, to be able to use multiple statements in your sql file, you ha
   }
 }
 ```
+
+## Important - For Postgresql (PSQL) users
+You'll need to install db-migrate-pg which provides the psql driver:
+```
+npm install --save db-migrate-pg
+```
