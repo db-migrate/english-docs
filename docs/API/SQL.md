@@ -262,16 +262,26 @@ exports.down = function (db, callback)
 };
 ```
 
-### insert(tableName, columnNameArray, valueArray, callback)
+### insert(tableName, { columnName: value }, callback)
 
 Insert an item into a given column
 
 __Arguments__
 
 * tableName - table to insert the item into
-* columnNameArray - the array existing column names for each item being inserted
-* valueArray - the array of values to be inserted into the associated column
-* callback(err) - callback that will be invoked once the insert has been completed.
+* columnName - the column name for each item being inserted
+* value - the array of values to be inserted into the associated column
+* callback - callback that will be invoked once the insert has been completed.
+
+```javascript
+exports.up = function(db, callback)
+{
+  db.insert('tableName',
+  {
+    columnName: 'value', columnName2: 'value2'
+  }, callback);
+};
+```
 
 ### removeIndex([tableName], indexName, callback)
 
