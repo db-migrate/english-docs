@@ -54,7 +54,7 @@ You can also specify environment variables in your config file by using a specia
 In this case, db-migrate will search your environment for variables
 called `PRODUCTION_USERNAME` and `PRODUCTION_PASSWORD`, and use those values for the corresponding configuration entry.
 
-If you use the [dotenv](https://www.npmjs.com/package/dotenv) package to manage environment variables, db-migrate will automatically load it.
+If you use the [dotenv](https://www.npmjs.com/package/dotenv) package to manage environment variables, db-migrate will automatically load the configuration loaded at `./.env`. You can specify an alternate path to be used with dotenv with the --dotenvCustomPath command line option, or a `dotenvCustomPath` entry in the `.db-migraterc` file.
 
 Note that if the settings for an environment are represented by a single string that string will be parsed as a database URL.
 

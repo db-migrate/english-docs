@@ -21,6 +21,7 @@ Options:
   --coffee-file               Create a coffeescript migration file            [default: false]
   --migration-table           Set the name of the migration table.
   --table, --migration-table                                                  [default: "migrations"]
+  --dotenvCustomPath          Set the path of the dotenv configuration file   [default: "./.env"]
 ```
 
 ## Creating Migrations
