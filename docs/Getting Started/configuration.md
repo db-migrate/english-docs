@@ -27,7 +27,7 @@ db-migrate supports the concept of environments. For example, you might have a d
     "host": "localhost",
     "database": "mydb",
     "port": "20144",
-    "ssl": "true",
+    "ssl": true,
     "schema": "my_schema"
   },
 
