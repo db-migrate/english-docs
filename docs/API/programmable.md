@@ -1,11 +1,11 @@
-# Programable API
+# Programmable API
 
 This API is intended for the usage with db-migrate as a module and consists out
 of several functions.
 
 ## Using db-migrate as module
 
-You can always find example on how to use the API in our
+You can always find an example on how to use the API in our
 example project:
 
 https://github.com/db-migrate/api-examples
