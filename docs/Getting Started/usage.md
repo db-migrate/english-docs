@@ -177,29 +177,24 @@ exports.down = function (db) {
 };
 ```
 
-or use the async library to simplify things a bit, such as:
+or use async/await to simplify things quite a bit, such as:
 
 ```javascript
-var async = require('async');
 
-exports.up = function (db, callback) {
-  async.series([
-    db.createTable.bind(db, 'pets', {
+exports.up = async (db) => {
+    await db.createTable('pets', {
       id: { type: 'int', primaryKey: true },
       name: 'string'
-    }),
-    db.createTable.bind(db, 'owners', {
+    });
+    await db.createTable('owners', {
       id: { type: 'int', primaryKey: true },
       name: 'string'
-    })
-  ], callback);
+    });  
 };
 
-exports.down = function (db, callback) {
-  async.series([
-    db.dropTable.bind(db, 'pets'),
-    db.dropTable.bind(db, 'owners')
-  ], callback);
+exports.down = async (db) => {
+    await db.dropTable('pets');
+    await db.dropTable('owners');  
 };
 ```
 
