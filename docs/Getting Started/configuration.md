@@ -56,6 +56,19 @@ called `PRODUCTION_USERNAME` and `PRODUCTION_PASSWORD`, and use those values for
 
 If you use the [dotenv](https://www.npmjs.com/package/dotenv) package to manage environment variables, db-migrate will automatically load it.
 
+You can provide a default value to use when an environment variable is not set on a given machine. This is useful
+for setting defaults for the dev environment, and for changing optional settings that need a default to operate. 
+```json
+{
+  "pg": {
+    "driver": "pg",
+    "user": {"ENV": "PG_USERNAME", "default":  "postgres"},
+    "password": {"ENV": "PG_PASSWORD", "default":  "password"}
+  }
+}
+```
+
+
 Note that if the settings for an environment are represented by a single string that string will be parsed as a database URL.
 
 You can pass the -e or --env option to db-migrate to select the environment you want to run migrations against. The --config option can be used to specify the path to your database.json file if it's not in the current working directory.
