@@ -68,7 +68,7 @@ __Options__
 * cwd - working directory (default: process.cwd)
 * config
      - string - location of the database.json file
-     - object - hash of [configuration](https://umigrate.readthedocs.org/projects/db-migrate/en/latest/Getting%20Started/configuration/) options
+     - object - hash of [configuration](https://db-migrate.readthedocs.io/en/latest/Getting%20Started/configuration/) options
 * cmdOptions - hash of CMD options from [Basic Usage](https://db-migrate.readthedocs.io/en/latest/Getting%20Started/installation/)
 * env - the environment to run the migrations under
 * throwUncatched - Throw an error instead of calling `process.exit(1)`
