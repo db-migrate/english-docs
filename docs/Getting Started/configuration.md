@@ -117,6 +117,7 @@ An example `.db-migraterc` config file could look like this:
 {
   "sql-file": true,
   "configFile": "path/to/config/database.json",
+  "migrations-dir": "path/to/migrations",
   "table": "new_migration_table_name"
 }
 ```
