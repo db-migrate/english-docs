@@ -6,13 +6,13 @@
 
 Database migration framework for node.js
 
+## _Official_ Supported Databases
 
-## *Official* Supported Databases
-
-* Mysql (https://github.com/felixge/node-mysql)
-* PostgreSQL (https://github.com/brianc/node-postgres)
-* sqlite3 (https://github.com/developmentseed/node-sqlite3)
-* Mongodb (https://github.com/mongodb/node-mongodb-native)
+- Mysql (https://github.com/felixge/node-mysql) - npm i db-migrate-mysql
+- PostgreSQL (https://github.com/brianc/node-postgres) - npm i db-migrate-pg
+- sqlite3 (https://github.com/developmentseed/node-sqlite3) - npm i db-migrate-sqlite3
+- Mongodb (https://github.com/mongodb/node-mongodb-native) - npm i db-migrate-mongodb
+- CockroachDB (https://github.com/db-migrate/cockroachdb) - npm i db-migrate-cockroachdb
 
 ## License
 
