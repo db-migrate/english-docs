@@ -143,7 +143,7 @@ Rename a database table
 __Arguments__
 
 * tableName - existing table name
-* options - new table name
+* newTableName - new table name
 * callback(err) - callback that will be invoked after renaming the table
 
 ### addColumn(tableName, columnName, columnSpec, callback)
