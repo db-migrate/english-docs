@@ -22,7 +22,8 @@ exports._meta = {
 ```
 
 Background migrations need db-migrate 1.4.0 and a driver with the
-[migration lock](running in parallel.md).
+[migration lock](running in parallel.md). Since 1.4.1 the jobs pause while
+migrations run, see [Jobs and migrations](#jobs-and-migrations).
 
 ## Running the jobs
 
@@ -94,6 +95,38 @@ failed, workers do not take it again. The next `db-migrate up` queues it again,
 fix the migration first. A failing job with steps which can not be reverted is
 not rolled back and continues after them.
 
-Jobs run without the migration lock, alongside other migrations. Do not
-change the schema of tables a running job works on, or make the job
-blocking and wait for it.
+## Reverting
+
+`down` takes the jobs as the latest migrations, they come first, before the
+migrations recorded as run. A job running or stopped half way is paused,
+the steps it executed so far are reverted, and the job is forgotten. A job
+not started yet is only forgotten. Once done, a background migration is
+reverted like any data migration.
+
+Reverting a job restores the rows it changed so far, from its backup tables
+or by its marks, in the foreground and while holding the migration lock. For
+a large job this can take as long as running it did, and other migrations
+and the jobs wait meanwhile. Since db-migrate 1.4.1, before `down` missed the
+jobs.
+
+## Jobs and migrations
+
+Migrations take precedence over the jobs. Whenever `up`, `down` or `fix` has
+something to run, it pauses the jobs after taking the
+[migration lock](running in parallel.md): no job is taken anymore, the
+running ones stop after their current batch, and the migrations wait for
+them:
+
+```
+[INFO] [jobs] waiting for 2 background job(s) to pause: 20261009120000-orders, 20261009130000-sessions
+```
+
+Once the migrations are done and the lock is released, the workers continue
+the jobs where they stopped. So a migration never changes a table while a job
+works on it, and a deployment waits at most for the batches running at that
+moment.
+
+The pause lasts as long as the migrating process holds the lock. If it dies,
+the jobs continue once its lock is considered stale, after `--lock-timeout`.
+A job whose worker does not respond for the lock timeout is not waited for,
+it is continued by another worker later.
