@@ -86,7 +86,7 @@ example `NODE_ENV`:
 
 ```json
 {
-  "defaultEnv": {"ENV": "NODE_ENV"},
+  "defaultEnv": {"ENV": "NODE_ENV", "default": "dev"},
   "prod": {
     "driver": "mysql",
     "user": {"ENV": "PRODUCTION_USERNAME"},
@@ -94,6 +94,10 @@ example `NODE_ENV`:
   }
 }
 ```
+
+If the variable is not set, `default` is taken, without it `dev` or
+`development`. Before db-migrate 1.8.0 it failed with
+`Environment(s) '' not found`.
 
 ## Environment variables
 
@@ -113,11 +117,26 @@ Any setting can be read from an environment variable with the notation
 db-migrate replaces them with the values of `PRODUCTION_USERNAME` and
 `PRODUCTION_PASSWORD`. An empty variable is reported with `--verbose`.
 
-A whole environment can be read from a variable holding a database URL:
+`default` is taken if the variable is not set or empty, since db-migrate
+1.8.0:
 
 ```json
 {
-  "prod": {"ENV": "DATABASE_URL_PROD"}
+  "dev": {
+    "driver": "pg",
+    "host": {"ENV": "PGHOST", "default": "localhost"},
+    "port": {"ENV": "PGPORT", "default": 5432}
+  }
+}
+```
+
+A whole environment can be read from a variable holding a database URL. The
+keys next to it are added to the settings of the URL (since 1.8.0, before
+they were dropped):
+
+```json
+{
+  "prod": {"ENV": "DATABASE_URL_PROD", "multipleStatements": true}
 }
 ```
 
