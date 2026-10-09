@@ -34,8 +34,20 @@ steps that reached the database. A step that failed on the database is not
 reverted, unless its main statement went through before failing (e.g. a table
 was created, but adding its foreign key failed).
 
-v1 migrations are not rolled back by db-migrate. Depending on the driver, they
-run inside a transaction.
+A migration that ran a step with `{ irreversible: true }` is not rolled back,
+as that step can not be reverted:
+
+```
+[ERROR] Migration "20261009000003-legacy" failed and can not be rolled back, it ran a step with { irreversible: true }. The steps executed stay, the next run continues after them.
+```
+
+The next `db-migrate up` [recovers](#interrupted-runs-v2) it like an
+interrupted run. See
+[Dropping irreversibly](migrations v2.md#dropping-irreversibly).
+
+v1 migrations are not rolled back by db-migrate. The SQL drivers run them
+inside a transaction (unless `--non-transactional`), so whatever the database
+can roll back is undone. See the [driver pages](../drivers.md).
 
 ## Interrupted runs (v2)
 

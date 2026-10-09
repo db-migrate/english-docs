@@ -31,9 +31,22 @@ exports._meta = {
 };
 ```
 
-`migrate` receives the driver and an options object, `opt.dbm` gives access to
-db-migrate, for example to its data types. Every instruction returns a promise,
-there are no callbacks.
+`migrate` receives the instructions as `db` and an options object:
+
+| `opt` | |
+|---|---|
+| `dbm` | `{ version, dataType }`, db-migrate and its [data types](../API/generic datatypes.md) |
+| `options` | the same options `setup` of a v1 migration receives, see [Usage](../Getting Started/usage.md#creating-migrations) |
+
+Every instruction returns a promise, there are no callbacks.
+
+`_meta` takes:
+
+| `_meta` | |
+|---|---|
+| `version` | `2`, required |
+| `noDefaultColumn` | `true` to not add the [default column](#the-default-column) |
+| `recovery` | `'skip'` (default) or `'rollback'`, see [Failures and recovery](failures and recovery.md#interrupted-runs-v2) |
 
 ## Instructions
 
@@ -55,10 +68,10 @@ A v2 migration can only run instructions db-migrate knows how to revert:
 
 Drivers can add further instructions. db-migrate-cockroachdb adds
 `createEnum`, `dropEnum`, `renameEnum`, `addEnumType`, `dropEnumType` and
-`changePrimaryKey`.
+`changePrimaryKey`, see [CockroachDB](../Drivers/cockroachdb.md#additional-instructions).
 
-Raw SQL (`runSql`) is not available in v2 migrations, as db-migrate can not
-learn what it does. Use a v1 migration for it.
+Raw SQL (`runSql`), `insert` and `all` are not available in v2 migrations, as
+db-migrate can not learn what they do. Use a v1 migration for them.
 
 ### Removing notNull columns
 
@@ -70,8 +83,78 @@ back without failing on the existing rows:
 - `{ columnStrategy: 'delay' }` renames the column instead of dropping it, so
   it can be renamed back.
 
+```js
+await db.removeColumn('pets', 'name', {
+  columnStrategy: 'defaultValue',
+  passthrough: { defaultValue: '' }
+});
+```
+
 The driver has to support column strategies, db-migrate-pg and
 db-migrate-cockroachdb do.
+
+## Objects created outside of v2 migrations
+
+db-migrate only knows the schema its v2 migrations taught it. A table created
+by a v1 migration, with `runSql` or by hand is unknown to it, and v2
+instructions on it fail:
+
+```
+The table "legacy" is unknown to the schema of db-migrate, it was not created by a v2 migration. Declare it first with db.adopt.createTable("legacy", columns), or pass { irreversible: true } to drop it without being able to revert it.
+```
+
+### Adopting
+
+`db.adopt` declares an existing object to the schema, without executing
+anything on the database and without adding the default column. Afterwards
+v2 migrations can change or drop it like their own objects, fully revertible:
+
+```js
+exports.migrate = async (db) => {
+  // legacy was created by a v1 migration
+  await db.adopt.createTable('legacy', {
+    id: { type: 'int', primaryKey: true },
+    name: { type: 'string', length: 20 }
+  });
+
+  await db.addColumn('legacy', 'age', { type: 'int' });
+  await db.removeColumn('legacy', 'name');
+};
+
+exports._meta = {
+  version: 2
+};
+```
+
+Reverting this migration removes `age` and adds `name` back from its adopted
+definition. Reverting the adopt itself only forgets the table again, it stays
+in the database.
+
+`db.adopt` offers `createTable`, `addColumn`, `addIndex`, `addForeignKey` and
+every other instruction starting with `create` or `add`, including those of
+the driver, like `createEnum` of db-migrate-cockroachdb. Describe the object
+as it exists, adopting an object already known to the schema fails.
+
+### Dropping irreversibly
+
+To drop an unknown object without declaring it, pass
+`{ irreversible: true }`:
+
+```js
+await db.dropTable('legacy', { irreversible: true });
+await db.removeColumn('pets', 'legacy_flag', { irreversible: true });
+await db.removeForeignKey('pets', 'pets_legacy_fk', { irreversible: true });
+```
+
+Such a step can not be reverted, and with it the whole migration:
+
+- If the migration fails, it is not rolled back. The executed steps stay, the
+  next run continues after them.
+- `db-migrate down` refuses to revert it, before changing anything:
+
+```
+Migration "20260101000003-drop" can not be reverted, it ran step 1 dropTable("junk") with { irreversible: true }.
+```
 
 ## The default column
 
@@ -92,9 +175,22 @@ state table before it runs, which is what makes the automatic rollback and the
 recovery of interrupted runs possible. See
 [Failures and recovery](failures and recovery.md).
 
+## Rebuilding the learned schema
+
+The learned schema is stored in the state table. If it got lost or out of
+sync, `db-migrate fix` rebuilds it from the executed v2 migrations without
+running anything on the database, see [Commands](../Getting Started/commands.md#fix).
+
+## Driver support
+
+v2 migrations need a driver with the state management of db-migrate 1.0:
+db-migrate-pg, db-migrate-mysql, db-migrate-sqlite3 and db-migrate-cockroachdb.
+A v2 migration can only use instructions its driver implements, and reverting
+needs the reverse instruction as well, e.g. sqlite3 can not remove columns,
+so it can not revert `addColumn`. MongoDB does not support v2 migrations. See
+[Drivers](../drivers.md).
+
 ## Limitations
 
-- db-migrate only knows the schema its v2 migrations taught it. A table
-  created by a v1 migration, or by hand, is unknown to it, and v2 instructions
-  on it fail with `There is no ... table in schema!`.
 - The data of a dropped table or column can not be restored by a rollback.
+- Steps run with `{ irreversible: true }` can not be reverted.
