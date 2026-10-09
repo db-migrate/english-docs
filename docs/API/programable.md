@@ -149,10 +149,18 @@ Create or drop a database, like `db:create` and `db:drop`.
 The promise resolves once the database is created or dropped. Before
 db-migrate 1.1.0 it resolved early and the process exited afterwards.
 
-## seed, undoSeed and resetSeed
+## seed([name], [callback])
 
-Seeders are not supported in 1.0, these methods reject with
-`Seeders are not supported by db-migrate 1.0`.
+Runs the [seeds](../Guides/seeds.md), all or the one named, like
+`db-migrate seed`.
+
+## undoSeed([name], [callback]) and resetSeed([callback])
+
+Remove the rows of the seeds, all or the one named, like `db-migrate seed
+down` and `db-migrate seed reset`.
+
+Before db-migrate 1.3.0, these methods rejected with `Seeders are not
+supported by db-migrate 1.0`.
 
 ## silence(isSilent)
 

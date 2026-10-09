@@ -70,8 +70,10 @@ Drivers can add further instructions. db-migrate-cockroachdb adds
 `createEnum`, `dropEnum`, `renameEnum`, `addEnumType`, `dropEnumType` and
 `changePrimaryKey`, see [CockroachDB](../Drivers/cockroachdb.md#additional-instructions).
 
-Raw SQL (`runSql`), `insert` and `all` are not available in v2 migrations, as
-db-migrate can not learn what they do. Use a v1 migration for them.
+Raw SQL (`runSql`), `insert` and `all` are not available in v2 schema
+migrations, as db-migrate can not learn what they do. Change data in a
+[data migration](data migrations.md), a v2 migration of the type `dml`, or use
+a v1 migration.
 
 ### Removing notNull columns
 

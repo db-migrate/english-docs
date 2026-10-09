@@ -125,7 +125,9 @@ This includes all DDL methods provided by SQL naturally.
 ### Description of the seeder interface
 
 **Note:** the seeders were never finished and are not part of db-migrate 1.0,
-the description below is kept for the concept.
+the description below is kept for the concept. Since 1.3.0, data is changed
+by [data migrations](../Guides/data migrations.md) and
+[seeds](../Guides/seeds.md).
 
 The seeder interface provides the ability to handle all operations, that
 are not DDL specific and thus not a migration.

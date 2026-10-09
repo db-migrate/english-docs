@@ -83,3 +83,24 @@ exports._meta = {
 - A step that was sent to the database but not confirmed before the process
   died is run again with `skip`. If it went through, it fails with "already
   exists" and has to be repaired by hand. The window for this is very small.
+
+## Data migrations
+
+[Data migrations](data migrations.md) are rolled back and recovered the same
+way, with one difference: the step a data migration failed or was interrupted
+at is always safe to revert or to run again.
+
+- A failed step is reverted with the others, its rows inserted so far are
+  deleted, its rows changed so far are restored from the backup.
+- An interrupted `insert` deletes the rows of its previous attempt and inserts
+  them again.
+- An interrupted `update` or `delete` continues with the batch after the last
+  one recorded, using the backup taken by its previous attempt:
+
+```
+[INFO] [recovery] 20261009000002-pet-data: continuing interrupted step 1 update("pets", {"kind":"hound"})
+```
+
+- An interrupted revert is continued by the next `db-migrate down`.
+- A `runSql` interrupted before it was confirmed is run again, like a step of
+  a schema migration.

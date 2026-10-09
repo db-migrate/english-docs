@@ -12,6 +12,8 @@ nav:
       - "Upgrading from 0.11": Getting Started/upgrading.md
   - Guides:
       - "Migration schema v2": Guides/migrations v2.md
+      - "Data migrations": Guides/data migrations.md
+      - "Seeds": Guides/seeds.md
       - "Running in parallel": Guides/running in parallel.md
       - "Failures and recovery": Guides/failures and recovery.md
   - Drivers:

@@ -26,7 +26,8 @@ See [Plugins](plugins.md).
 
 The seeders were never finished. In 1.0, `db-migrate seed` and the seed
 functions of the programmable API fail with a clear message instead of
-silently doing nothing. A new concept for seeding follows separately. The options
+silently doing nothing. Since 1.3.0 there are [seeds](../Guides/seeds.md) and
+[data migrations](../Guides/data migrations.md) instead. The options
 `--seeds-table`, `--vcseeder-dir` and `--staticseeder-dir` are still accepted,
 but have no effect.
 

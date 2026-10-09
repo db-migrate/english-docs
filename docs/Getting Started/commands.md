@@ -148,13 +148,18 @@ what each driver supports. `db` without `:create` or `:drop` fails with
 
 ## seed
 
-Seeders are not supported by db-migrate 1.0, they were never finished.
-`db-migrate seed` fails with:
+    db-migrate seed [name]
+    db-migrate seed down [name]
+    db-migrate seed reset
 
-    [ERROR] Seeders are not supported by db-migrate 1.0. The unfinished seeders of db-migrate 0.11 are still available there.
+Runs the [seeds](../Guides/seeds.md) in `seeds/`, all or the one named,
+replacing the rows they inserted before. `seed down` removes the rows of all
+seeds or the one named, `seed reset` of all seeds. Set the directory with
+`--seeds-dir`. Since db-migrate 1.3.0, before it failed with `Seeders are not
+supported by db-migrate 1.0`.
 
-The options `--seeds-table`, `--vcseeder-dir` and `--staticseeder-dir` are
-still accepted, but have no effect.
+The options `--seeds-table`, `--vcseeder-dir` and `--staticseeder-dir` of the
+seeders of 0.11 are still accepted, but have no effect.
 
 ## Commands of plugins
 
