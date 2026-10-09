@@ -312,22 +312,54 @@ exports.down = function (db) {
 };
 ```
 
-### insert(tableName, columnNameArray, valueArray, [callback])
+### insert(tableName, rows, [callback])
 
-Insert a row into a table
+Insert rows into a table
 
 __Arguments__
 
-* tableName - table to insert the row into
-* columnNameArray - the names of the columns
-* valueArray - the values, in the order of the columns
+* tableName - table to insert the rows into
+* rows - the rows, in one of the forms below
 * callback(err) - callback that will be invoked once the insert has been completed
 
 ```javascript
-exports.up = function (db) {
-  return db.insert('pets', ['name', 'kind'], ['Rex', 'dog']);
+exports.up = async function (db) {
+  // one row as an object
+  await db.insert('pets', { name: 'Rex', kind: 'dog' });
+
+  // several rows as objects
+  await db.insert('pets', [
+    { name: 'Tom', kind: 'cat' },
+    { name: 'Nemo' }
+  ]);
+
+  // the columns and the values of all rows one after another
+  await db.insert('pets', {
+    columns: ['name', 'kind'],
+    data: ['Bello', 'dog', 'Garfield', 'cat']
+  });
 };
 ```
+
+The columns and values can also be passed separately, the values of one row
+or an array of rows:
+
+```javascript
+exports.up = async function (db) {
+  await db.insert('pets', ['name', 'kind'], ['Rex', 'dog']);
+  await db.insert('pets', ['name', 'kind'], [['Tom', 'cat'], ['Nemo', null]]);
+};
+```
+
+The values are passed to the database as parameters, so they need no
+escaping. Objects and arrays are stored as JSON, dates and buffers as they
+are, `undefined` as `NULL`. A column missing in an object gets its default
+value: rows with different columns are inserted with one statement per set of
+columns. Many rows are inserted in batches of up to 999 values each.
+
+The object forms and several rows need db-migrate-base 2.5.0, which comes with
+db-migrate-pg 1.7.0, db-migrate-mysql 3.2.0, db-migrate-sqlite3 1.2.0 and
+db-migrate-cockroachdb 5.9.0.
 
 ### runSql(sql, [params], [callback])
 
@@ -367,7 +399,8 @@ db-migrate-mysql 3.1.1, `all` only worked with a callback there.
 | | pg | mysql | sqlite3 | cockroachdb |
 |---|---|---|---|---|
 | createTable, dropTable, renameTable, addColumn | yes | yes | yes | yes |
-| removeColumn, renameColumn, changeColumn | yes | yes | no | yes |
+| removeColumn, renameColumn | yes | yes | yes | yes |
+| changeColumn | yes | yes | no | yes |
 | addIndex, removeIndex | yes | yes | yes | yes |
 | addForeignKey, removeForeignKey, `foreignKey` | yes | yes | no | yes |
 | insert, runSql, all | yes | yes | yes | yes |

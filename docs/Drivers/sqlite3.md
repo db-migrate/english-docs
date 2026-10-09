@@ -38,13 +38,15 @@ the same name, any other type is passed on as is.
 ## Supported operations
 
 The driver implements `createTable`, `dropTable`, `renameTable`, `addColumn`,
-`addIndex`, `removeIndex`, `insert`, `runSql` and `all` of the
-[SQL API](../API/SQL.md).
+`removeColumn`, `renameColumn`, `addIndex`, `removeIndex`, `insert`, `runSql`
+and `all` of the [SQL API](../API/SQL.md). `removeColumn` and `renameColumn`
+need db-migrate-sqlite3 1.2.0. SQLite can not drop a column that is part of
+the primary key, unique, indexed or referenced by a foreign key, remove the
+index first.
 
-Not implemented, they fail with `not implemented`: `removeColumn`,
-`renameColumn`, `changeColumn`, `addForeignKey`, `removeForeignKey`. A
-`foreignKey` in a column spec is ignored. Run the SQL yourself with `runSql`
-for these.
+Not implemented, they fail with `not implemented`: `changeColumn`,
+`addForeignKey`, `removeForeignKey`. A `foreignKey` in a column spec is
+ignored. Run the SQL yourself with `runSql` for these.
 
 `autoIncrement` on a single primary key creates `PRIMARY KEY AUTOINCREMENT`.
 `defaultValue: { special: 'CURRENT_TIMESTAMP' }` sets the default to
@@ -62,5 +64,5 @@ for these.
   `--non-transactional`.
 - v2 migrations can only use the instructions implemented by the driver, and
   their reverse operations need them as well, e.g. reverting an `addColumn`
-  needs `removeColumn`.
+  needs `removeColumn`, available since 1.2.0.
 - Supports the [migration lock](../Guides/running in parallel.md) since 1.1.0.
