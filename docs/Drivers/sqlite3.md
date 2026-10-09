@@ -23,6 +23,7 @@ Based on [node-sqlite3](https://github.com/TryGhost/node-sqlite3).
 |---|---|
 | `filename` | the database file, required, without it connecting fails (since 1.1.1, before the run hung). It is created if it does not exist. |
 | `mode` | the open mode of node-sqlite3, a number, by default `OPEN_READWRITE \| OPEN_CREATE` |
+| `busyTimeout` | ms to wait for locks of other connections to the file, before failing with `SQLITE_BUSY`, 5000 by default (since 1.2.1) |
 
 ## Data types
 
