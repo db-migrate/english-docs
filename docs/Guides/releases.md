@@ -117,3 +117,22 @@ purged before the first migration of the release with `drop: 'auto'`, or
 warned about with `drop: 'manual'` until `db.purge` purges them. A release
 which purged rows can not be reverted, `down` refuses it before reverting
 anything.
+
+## Backups of data migrations
+
+`update` and `delete` of [data migrations](data migrations.md) keep the rows
+they changed in backup tables, to revert the migration. Once a data migration
+ran `N` releases ago, it is considered final: with `drop: 'auto'` its backups
+are dropped before the first migration of the release, with `drop: 'manual'`
+`up` and `check` warn until a data migration drops them:
+
+```js
+// the backups of all data migrations due
+await db.dropBackups();
+// of one migration, due or not
+await db.dropBackups('20261009120000-orders');
+```
+
+A data migration whose backups are dropped can not be reverted anymore. The
+options are the same as for deprecations, `deprecation: { releases, drop }`.
+Since db-migrate 1.7.0.

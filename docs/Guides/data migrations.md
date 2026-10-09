@@ -78,8 +78,9 @@ The key is the primary key of the table, as created by v2 migrations. For
 other tables pass it, `{ key: 'id' }` or `{ key: ['a', 'b'] }`. An update can
 not change the key itself.
 
-The backup tables stay until the migration is reverted, as long as it may be
-reverted. Rows deleted by the database on its own, e.g. by a foreign key with
+The backup tables stay until the migration is reverted, or until it is
+final after some releases, see
+[Releases and deprecation](releases.md#backups-of-data-migrations). Rows deleted by the database on its own, e.g. by a foreign key with
 `ON DELETE CASCADE`, are not in the backup, delete them explicitly first if
 reverting has to bring them back.
 
