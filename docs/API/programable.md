@@ -149,6 +149,15 @@ Create or drop a database, like `db:create` and `db:drop`.
 The promise resolves once the database is created or dropped. Before
 db-migrate 1.1.0 it resolved early and the process exited afterwards.
 
+## status([scope], [callback])
+
+Resolves with what `db-migrate status` shows, as an object: `pending`,
+`release`, `lock`, `jobs`, `paused`, `deprecated`, `purges` and `backups`.
+
+```javascript
+const { pending, jobs } = await dbmigrate.status();
+```
+
 ## executeWork([options])
 
 Runs the jobs of [background migrations](../Guides/background migrations.md)

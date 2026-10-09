@@ -166,6 +166,32 @@ supported by db-migrate 1.0`.
 The options `--seeds-table`, `--vcseeder-dir` and `--staticseeder-dir` of the
 seeders of 0.11 are still accepted, but have no effect.
 
+## status
+
+    db-migrate status
+
+Shows what db-migrate knows about the database, without changing anything:
+
+```
+Pending migrations:
+  20261010090000-add-index
+Release: 2.4.0
+Migration lock: free
+Background jobs:
+  20261009120000-orders: running, step 1, 0 done
+Deprecated:
+  table "legacy_orders" renamed to __dbm_deprecated_legacy_orders_20261001090000, 1 of 4 releases
+Purges: none
+Backups:
+  20261005100000-fix-prices: 1 table(s), 2 of 4 releases
+```
+
+The pending migrations, the latest [release](../Guides/releases.md), the
+migration lock and a migration interrupted while holding it, the jobs of
+[background migrations](../Guides/background migrations.md) and whether
+they are paused for migrations, and what is deprecated, to purge or backed up,
+with how many releases passed and whether it is due. Since db-migrate 1.7.0.
+
 ## work
 
     db-migrate work [--parallel n] [--pause ms] [--batch n] [--watch]
