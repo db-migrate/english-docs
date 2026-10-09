@@ -47,5 +47,5 @@ db-migrate warns about it on every run and works as before 1.0:
 - no [v2 migrations](../Guides/migrations v2.md), only v1 migrations
 - no transactions
 - a [scope](../Getting Started/commands.md#scope-configuration) `config.json`
-  has no effect
+  only switching the `database` has no effect
 - `db:create` and `db:drop` are not supported

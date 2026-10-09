@@ -60,7 +60,10 @@ In addition to the [common column spec](../API/SQL.md#column-spec):
 | `precision`, `scale` | for `decimal` |
 
 A `defaultValue` starting with `CURRENT_TIMESTAMP` is not quoted,
-`defaultValue: null` sets `DEFAULT NULL`.
+`defaultValue: null` sets `DEFAULT NULL`. Since 3.1.1,
+`{ special: 'CURRENT_TIMESTAMP' }` works as well, and `{ raw: '...' }` is
+used unchanged, so MySQL expressions need their parentheses:
+`defaultValue: { raw: '(UUID())' }`.
 
 ```js
 db.addColumn('pets', 'updated_at', {
@@ -103,11 +106,11 @@ db.createTable('pets', {
 - `renameColumn` keeps the type of the column.
 - `changeColumn` redefines the column with the given spec
   (`CHANGE COLUMN`), `unique: false` drops the index named like the column.
-- `all` only works with a callback, it does not return a promise. Use
-  `runSql` with a promise instead, it resolves with the rows of a query.
+- `all` returns a promise since 3.1.1, before it only worked with a callback.
 - `db:create` and `db:drop` use `IF NOT EXISTS` and `IF EXISTS`.
 - A [scope](../Getting Started/commands.md#scope-configuration) `config.json`
-  switches the database with `USE`, it has to contain `database`.
+  with only `database` switches the database with `USE`. One without
+  `database` (e.g. only `schema`) changes nothing, before 3.1.1 it hung.
 - v1 migrations run inside a transaction (`START TRANSACTION` ... `COMMIT`),
   unless `--non-transactional`. Note that MySQL commits most schema changes
   implicitly.

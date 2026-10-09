@@ -45,9 +45,23 @@ The settings are passed to `pg.Client`, so every
 
 ### Schema
 
-**Note:** with db-migrate 1.0.0 and db-migrate-pg 1.6.0 the `schema` setting
-is not applied, migrations and the tables of db-migrate end up in the default
-`search_path`. Set the `search_path` of the connection instead:
+`schema` puts the given schema in front of the `search_path` of every
+connection, so the migrations table, the state table and the tables of your
+migrations land in it. The schema has to exist.
+
+```json
+{
+  "dev": {
+    "driver": "pg",
+    "database": "app",
+    "schema": "my_schema"
+  }
+}
+```
+
+**Note:** db-migrate-pg 1.6.0 does not apply `schema`, everything ends up in
+the default `search_path`; update to 1.6.1. With 1.6.0, set the `search_path`
+of the connection instead:
 
 ```json
 {
@@ -59,11 +73,10 @@ is not applied, migrations and the tables of db-migrate end up in the default
 }
 ```
 
-The schema has to exist.
-
 A [scope](../Getting Started/commands.md#scope-configuration) `config.json`
-with `schema` (or `database`) sets the `search_path` before the migrations of
-the scope run.
+with only `schema` (or `database`) sets the `search_path` before the
+migrations of the scope run. A scope `config.json` with further connection
+settings connects on its own, there `database` is the real database.
 
 ## Data types
 
@@ -125,3 +138,5 @@ db.changeColumn('pets', 'age', {
 - Errors show the position of the failed statement reported by PostgreSQL,
   see [Failures and recovery](../Guides/failures and recovery.md).
 - Supports the [migration lock](../Guides/running in parallel.md) since 1.6.0.
+- Since 1.6.1, a connection error is reported once, and an unsupported special
+  default value is dropped with a warning instead of failing.

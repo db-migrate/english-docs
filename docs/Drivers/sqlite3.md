@@ -21,7 +21,7 @@ Based on [node-sqlite3](https://github.com/TryGhost/node-sqlite3).
 
 | Setting | |
 |---|---|
-| `filename` | the database file, required. It is created if it does not exist. |
+| `filename` | the database file, required, without it connecting fails (since 1.1.1, before the run hung). It is created if it does not exist. |
 | `mode` | the open mode of node-sqlite3, a number, by default `OPEN_READWRITE \| OPEN_CREATE` |
 
 ## Data types
@@ -52,10 +52,12 @@ for these.
 
 ## Further notes
 
-- `db:create` does nothing, the file is created on connect. `db:drop` is not
-  supported.
+- `db:create` succeeds without doing anything, sqlite creates the file on
+  its own when connecting (since 1.1.1). `db:drop` fails with
+  `sqlite has no databases to drop, delete the database file instead`.
 - A [scope](../Getting Started/commands.md#scope-configuration) `config.json`
-  is ignored.
+  with only `database` or `schema` is ignored. One with a `filename` connects
+  the scope to that file, with its own migrations and state tables.
 - v1 migrations run inside `BEGIN TRANSACTION` ... `COMMIT`, unless
   `--non-transactional`.
 - v2 migrations can only use the instructions implemented by the driver, and

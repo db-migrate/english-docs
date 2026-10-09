@@ -123,3 +123,5 @@ is passed on as is.
 - v1 migrations run inside `BEGIN` ... `COMMIT`, unless `--non-transactional`.
 - Supports [column strategies](../Guides/migrations v2.md#removing-notnull-columns).
 - Supports the [migration lock](../Guides/running in parallel.md) since 5.8.0.
+- Since 5.8.2, a connection error is reported once, and an unsupported special
+  default value is dropped with a warning instead of failing.

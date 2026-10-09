@@ -142,7 +142,9 @@ environment, without its `database`.
 
 db-migrate asks the driver to create the database only if it does not exist
 and to drop it only if it exists. See the [driver pages](../drivers.md) for
-what each driver supports.
+what each driver supports. `db` without `:create` or `:drop` fails with
+`Missing db command, use db:create or db:drop`, a missing name with
+`You must enter a database name!`.
 
 ## seed
 
@@ -180,18 +182,35 @@ The migrations table records the migrations of a scope with the scope as
 prefix, like `test/20150207135259-add-pets`, so equally named migrations of
 different scopes do not collide.
 
-`all` is reserved and can not be used as a scope name. `db-migrate up:all` is
-meant to run the top level migrations and those of every scope.
+## The scope all
 
-**Note:** in db-migrate 1.0.0, `up:all` only runs the top level migrations.
-Run each scope on its own instead.
+`all` is reserved and can not be used as a scope name. With `all`, a command
+runs for every scope, one after another: first the migrations directly in the
+migrations directory, then every sub folder, recursively and in alphabetical
+order, nested ones as `a/b`. Folders named `sqls` hold the files of
+`--sql-file` migrations and are no scopes.
+
+    db-migrate up:all
+    db-migrate check:all
+
+This works with `up`, `down`, `reset`, `sync`, `check` and `fix`. With
+`--force-exit`, db-migrate exits after the last scope only.
 
 ## Scope configuration
 
-A scope can switch to another database. Place a `config.json` into the folder
-of the scope:
+A scope can have a configuration of its own, a `config.json` in the folder of
+the scope:
 
     migrations/test/config.json
+
+Entries in the `{"ENV": "NAME"}` notation are read from the environment, like
+in the [config file](configuration.md#environment-variables). The
+configuration only applies to the scope itself, not to scopes nested in it.
+
+### Switching the database or schema
+
+A `config.json` with only `database` or `schema` switches the connections of
+the environment before the migrations of the scope run:
 
 ```json
 {
@@ -199,11 +218,38 @@ of the scope:
 }
 ```
 
-Before running the migrations of the scope, db-migrate switches the
-connection to the given `database`. How depends on the driver: mysql switches
-the database, PostgreSQL sets the `search_path` to the given `database` or
-`schema` instead, as a connection can not switch databases there, and sqlite3
-ignores it. See the [driver pages](../drivers.md).
+How depends on the driver: mysql switches the database, PostgreSQL sets the
+`search_path` to the given `database` or `schema` instead, as a connection
+can not switch databases there, and sqlite3 ignores it. See the
+[driver pages](../drivers.md).
+
+The migrations table and the state table are used in the database or schema
+switched to, so the scope keeps its own migration records, lock, recovery
+progress and learned schema there.
+
+**Upgrading from 1.0:** db-migrate 1.0 kept the state of such scopes in the
+database of the environment. If v2 migrations of the scope ran before, run
+`db-migrate fix:<scope>` once to learn their schema in the database of the
+scope.
+
+### A database of its own
+
+A `config.json` with any other connection setting, like `host`, `user`,
+`password` or even `driver`, connects the scope on its own. It inherits every
+setting of the environment it does not set itself:
+
+```json
+{
+  "host": "analytics.internal",
+  "database": "analytics",
+  "user": "migrator",
+  "password": {"ENV": "ANALYTICS_PASSWORD"}
+}
+```
+
+The scope has its own migrations table, state table, lock and learned schema
+in that database. With PostgreSQL, `database` means the real database here,
+not the `search_path`.
 
 # Options
 
@@ -226,10 +272,11 @@ Options are given on the command line, or in an
 | `--lock-interval` | `1000` | Milliseconds between checks while waiting for the migration lock. |
 | `--non-transactional` | `false` | Do not run v1 migrations inside a transaction. |
 | `--force-exit` | `false` | Exit the process with `process.exit(0)` after a successful run. |
+| `--ignore-completed-migrations` | `false` | Ignore the record of executed migrations and start at the first migration, all migrations run again. |
 | `--v2-file` | `false` | `create`: create a v2 migration. |
 | `--sql-file` | `false` | `create`: create a migration running sql files. |
 | `--coffee-file` | `false` | `create`: create a CoffeeScript migration. |
-| `--ignore-on-init` | `false` | `create` with `--sql-file`: create a migration whose up can be skipped. `up`: skip the up of such migrations, they are recorded as executed nevertheless. |
+| `--ignore-on-init` | `false` | `create` with `--sql-file`: create a migration whose up is skipped when running with `--ignore-on-init`, e.g. to initialize a database from a dump. `up`: skip the up of such migrations, they are recorded as executed nevertheless. |
 | `--backup-state` | `false` | `fix`: back up the state first. |
 | `--help`, `-h` | | Print the help. |
 | `--version`, `-i` | | Print the version. |

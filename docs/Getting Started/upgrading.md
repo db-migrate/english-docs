@@ -42,6 +42,16 @@ Next to the migrations table, db-migrate creates and maintains a state table,
 running migrations. Its name can be set with `--state-table`. Keep it, deleting
 it loses the lock and the information needed to recover interrupted runs.
 
+## Upgrading from 1.0 to 1.1
+
+- A scope whose `config.json` switches the `database` or `schema` keeps its
+  migration lock, recovery progress and learned schema in that database or
+  schema now. If v2 migrations of such a scope ran with 1.0, run
+  `db-migrate fix:<scope>` once to learn their schema there. See
+  [Scope configuration](commands.md#scope-configuration).
+- With PostgreSQL, update to db-migrate-pg 1.6.1, 1.6.0 ignores the `schema`
+  setting, see [PostgreSQL](../Drivers/pg.md#schema).
+
 ## Update your driver
 
 Install the current version of your driver to get the

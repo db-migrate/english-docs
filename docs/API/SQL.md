@@ -71,11 +71,15 @@ __Default values__
 
 * a string is quoted: `defaultValue: 'none'`
 * numbers and booleans are used as they are: `defaultValue: 0`
-* an expression, like a function call, is passed as a String object:
-  `defaultValue: new String('uuid_generate_v4()')`. pg, sqlite3 and
-  cockroachdb also take `defaultValue: { raw: 'uuid_generate_v4()' }`
+* an expression, like a function call, is used unchanged with
+  `defaultValue: { raw: 'uuid_generate_v4()' }` (mysql since 3.1.1), or passed
+  as a String object: `defaultValue: new String('uuid_generate_v4()')`
 * the current time: `defaultValue: { special: 'CURRENT_TIMESTAMP' }`
-  (pg, sqlite3, cockroachdb). With mysql, use `defaultValue: 'CURRENT_TIMESTAMP'`
+  (pg, sqlite3, cockroachdb, mysql since 3.1.1)
+
+A special default value the driver does not support is dropped with a
+warning (db-migrate-base 2.4.1 with pg 1.6.1, sqlite3 1.1.1, cockroachdb
+5.8.2, mysql 3.1.1; older versions fail).
 
 __Foreign keys__
 
@@ -355,8 +359,8 @@ __Arguments__
 * params - an array of replacement parameters
 * callback(err, results) - callback that will be invoked with the rows
 
-With pg and cockroachdb, write the parameters as `$1`, `$2`, ... With mysql,
-`all` only works with a callback.
+With pg and cockroachdb, write the parameters as `$1`, `$2`, ... Before
+db-migrate-mysql 3.1.1, `all` only worked with a callback there.
 
 ## Support by driver
 

@@ -56,8 +56,9 @@ __Options__
   with an array of plugins
 
 The [rc configs](../Getting Started/configuration.md#rc-configs) are applied
-in module mode as well. Note that this includes the arguments of the command
-line of your process, which rc parses, e.g. `--env` or `--table`.
+in module mode as well. The arguments of the command line of your process are
+left alone since db-migrate 1.1.0, before they were applied as options of
+db-migrate.
 
 __Properties__
 
@@ -135,6 +136,10 @@ Rebuilds the schema learned from v2 migrations, see the CLI
 Creates a new migration from a template. Choose the template with
 `cmdOptions` or `setConfigParam`, e.g. `setConfigParam('v2-file', true)`.
 
+**Note:** in db-migrate 1.1.0, `create` fails in module mode with
+`Cannot read properties of undefined (reading 'unshift')`. Pass `_: []` in
+`cmdOptions` to avoid it.
+
 __Arguments__
 
 * migrationName - the name of the new migration
@@ -145,9 +150,8 @@ __Arguments__
 
 Create or drop a database, like `db:create` and `db:drop`.
 
-**Note:** in db-migrate 1.0.0 the promise resolves before the database is
-created or dropped, and with most drivers the process exits once it is done. Run `db-migrate
-db:create` in a separate process instead.
+The promise resolves once the database is created or dropped. Before
+db-migrate 1.1.0 it resolved early and the process exited afterwards.
 
 ## seed, undoSeed and resetSeed
 

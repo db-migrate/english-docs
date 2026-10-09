@@ -195,10 +195,9 @@ taking precedence:
 3. `.db-migraterc` in the current directory, or the first one found in a
    parent directory
 
-The keys are the long names of the options, except for the table names: use
-`table` for the migrations table and `state` for the state table, the names
-`migration-table` and `state-table` are not picked up from rc configs. Options
-given on the command line take precedence over the rc configs.
+The keys are the long names of the options, for the table names `table` and
+`migration-table`, `state` and `state-table` work alike. Options given on the
+command line take precedence over the rc configs.
 
 ```json
 {
@@ -222,7 +221,7 @@ section to your environment.
 ## State table and migration lock
 
 db-migrate keeps a state table next to the migrations table, `migrations_state`
-by default, set with `--state-table` or `state` in the rc config. It holds
+by default, set with `--state-table` or `state-table` in the rc config. It holds
 the [migration lock](../Guides/running in parallel.md) and the schema and
 progress of [v2 migrations](../Guides/migrations v2.md). The lock is tuned
 with `lock-timeout` and `lock-interval`. Keep the table, deleting it loses the
