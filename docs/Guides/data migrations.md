@@ -103,6 +103,10 @@ Soft mode works in batches by the key like `update`, but needs no backup
 table. It needs the `__dbmigrate__flag` column, so tables created by v2
 migrations only.
 
+With `purge: true` or `purge: { releases, drop }`, the rows are purged along
+the releases of your application, see
+[Releases and deprecation](releases.md#rows-deleted-in-soft-mode).
+
 ### purge
 
 Once the soft deleted rows are not needed anymore, a later migration deletes

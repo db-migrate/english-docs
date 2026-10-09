@@ -66,6 +66,10 @@ A v2 migration can only run instructions db-migrate knows how to revert:
 | `addForeignKey(table, refTable, key, mapping, rules)` | removing the foreign key |
 | `removeForeignKey(table, key)` | adding it back |
 
+`deprecateTable`, `deprecateColumn` and `dropDeprecated` remove tables and
+columns along the releases of your application, see
+[Releases and deprecation](releases.md).
+
 Drivers can add further instructions. db-migrate-cockroachdb adds
 `createEnum`, `dropEnum`, `renameEnum`, `addEnumType`, `dropEnumType` and
 `changePrimaryKey`, see [CockroachDB](../Drivers/cockroachdb.md#additional-instructions).

@@ -14,6 +14,7 @@ nav:
       - "Migration schema v2": Guides/migrations v2.md
       - "Data migrations": Guides/data migrations.md
       - "Background migrations": Guides/background migrations.md
+      - "Releases and deprecation": Guides/releases.md
       - "Seeds": Guides/seeds.md
       - "Running in parallel": Guides/running in parallel.md
       - "Failures and recovery": Guides/failures and recovery.md
