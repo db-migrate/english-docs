@@ -40,7 +40,7 @@ columns).
 | | |
 |---|---|
 | R | marked, `notNull` of a column relaxed |
-| R+1 | renamed to `__dbm_deprecated_<name>_<time>`, whatever still uses it fails now, while the data is still there |
+| R+1 | renamed to `__dbm_deprecated_<name>_<time>`, with the time of the migration deprecating it, whatever still uses it fails now, while the data is still there |
 | R+N | dropped, with `drop: 'auto'` only |
 
 The renaming and dropping happen before the first migration of the release,
@@ -48,7 +48,7 @@ logged as:
 
 ```
 [INFO] [release] starting release 2.4.0
-[INFO] [release] renaming the deprecated table "legacy_orders" to __dbm_deprecated_legacy_orders_1791580829
+[INFO] [release] renaming the deprecated table "legacy_orders" to __dbm_deprecated_legacy_orders_20261009120000
 ```
 
 ## Dropping
@@ -96,7 +96,8 @@ and relaxing `notNull` is reverted. Reverting the first migration of a
 release reverts what was done before it, a renamed table or column gets its
 name back, a dropped one is created again, without its data.
 
-`db-migrate fix` does not redo the renaming and dropping of releases yet.
+`db-migrate fix` learns the renaming and dropping of the releases again,
+since db-migrate 1.6.0.
 
 ## Rows deleted in soft mode
 

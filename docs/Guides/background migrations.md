@@ -27,6 +27,16 @@ migrations run, see [Jobs and migrations](#jobs-and-migrations).
 
 ## Running the jobs
 
+    $ db-migrate work --parallel 2 --pause 50 --watch
+
+runs the jobs in a process of its own, e.g. a container next to your
+application, with the options below as `--parallel`, `--pause`, `--batch`,
+`--watch`, `--interval` and `--job-timeout`. `SIGINT` and `SIGTERM` let the
+jobs stop after their current batch, they continue with the next run. It ends
+with exit code 1 if jobs failed. `db-migrate work` needs db-migrate 1.6.0.
+
+Or run them inside your application with the programmable API:
+
 ```js
 const DBMigrate = require('db-migrate');
 const dbm = DBMigrate.getInstance(true);

@@ -86,6 +86,11 @@ created.
 
     db-migrate fix --backup-state
 
+Before db-migrate 1.6.0, `fix` learned on top of the stored schema and added
+the records of the migrations a second time, so `down` reverted their steps
+twice afterwards. If you ran `fix` with an older version, run it again with
+1.6.0.
+
 ## create
 
 Creates a new migration from a template. The file name is the current UTC
@@ -160,6 +165,14 @@ supported by db-migrate 1.0`.
 
 The options `--seeds-table`, `--vcseeder-dir` and `--staticseeder-dir` of the
 seeders of 0.11 are still accepted, but have no effect.
+
+## work
+
+    db-migrate work [--parallel n] [--pause ms] [--batch n] [--watch]
+
+Runs the jobs of [background migrations](../Guides/background migrations.md),
+until none is left or, with `--watch`, until stopped with `SIGINT` or
+`SIGTERM`. Since db-migrate 1.6.0.
 
 ## Commands of plugins
 
