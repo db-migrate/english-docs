@@ -136,10 +136,6 @@ Rebuilds the schema learned from v2 migrations, see the CLI
 Creates a new migration from a template. Choose the template with
 `cmdOptions` or `setConfigParam`, e.g. `setConfigParam('v2-file', true)`.
 
-**Note:** in db-migrate 1.1.0, `create` fails in module mode with
-`Cannot read properties of undefined (reading 'unshift')`. Pass `_: []` in
-`cmdOptions` to avoid it.
-
 __Arguments__
 
 * migrationName - the name of the new migration
