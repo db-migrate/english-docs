@@ -14,6 +14,13 @@ nav:
       - "Migration schema v2": Guides/migrations v2.md
       - "Running in parallel": Guides/running in parallel.md
       - "Failures and recovery": Guides/failures and recovery.md
+  - Drivers:
+      - "Overview": drivers.md
+      - "PostgreSQL": Drivers/pg.md
+      - "MySQL": Drivers/mysql.md
+      - "sqlite3": Drivers/sqlite3.md
+      - "CockroachDB": Drivers/cockroachdb.md
+      - "MongoDB": Drivers/mongodb.md
   - API:
       - "Generic Datatypes": API/generic datatypes.md
       - "SQL API": API/SQL.md

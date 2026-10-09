@@ -1,242 +1,210 @@
 # Programable API
 
-This API is intended for the usage with db-migrate as a module and consists out
-of several functions.
-
-## Using db-migrate as module
-
-You can always find example on how to use the API in our
-example project:
-
-https://github.com/db-migrate/api-examples
-
-To get an instance of db-migrate you need to call it in your application like the following:
+db-migrate can be used as a module, for example to migrate on application
+start or in tests. Examples are in the
+[api-examples project](https://github.com/db-migrate/api-examples).
 
 ```javascript
-var DBMigrate = require('db-migrate');
-var assert = require('assert');
+const DBMigrate = require('db-migrate');
 
-//getting an instance of dbmigrate
-var dbmigrate = DBMigrate.getInstance(true);
+const dbmigrate = DBMigrate.getInstance(true, {
+  env: 'test',
+  config: {
+    test: { driver: 'sqlite3', filename: ':memory:' }
+  }
+});
 
-//execute any of the API methods
-dbmigrate.reset()
-.then( () => dbmigrate.up() );
+await dbmigrate.reset();
+await dbmigrate.up();
 ```
 
-## Handle the onComplete callback outside of db-migrate
+Every method running migrations returns a promise and takes an optional
+callback as last argument. A failure rejects with the error described in
+[Failures and recovery](../Guides/failures and recovery.md#error-output).
 
-If you want to handle the onComplete callback in your own project you can do
-this like this:
+Create a new instance for every run, the instance keeps the options of the
+previous call, like a count or a scope.
 
-```javascript
-function specialCallback(migrator, originalError) {
-  migrator.driver.close(function(err) {
-    assert.ifError(originalErr);
-    assert.ifError(err);
-    log.info('Done');
-  });
-}
-
-//specify an own callback, to handle errors on your side of the application.
-var dbmigrate_2 = DBMigrate.getInstance(true, specialCallback);
-```
-
-## Start the CLI mode
-
-If you need to use the CLI mode and just made some customizations
-you can do this via the following example:
-
-```javascript
-//get an instance and call the standard runtime behavior
-var dbmigrate_3 = DBMigrate.getInstance();
-dbmigrate_3.run();
-```
-
-### getInstance(isModule, options, callback)
+## getInstance(isModule, [options], [callback])
 
 Get an instance of the db-migrate API.
 
 __Arguments__
 
-* isModule - set true to return the API as a node module
-* options - hash of various options
-* callback - custom callback
+* isModule - `true` to use db-migrate as a module. Otherwise the command line
+  of the process is parsed and the instance is meant for `run()`.
+* options - see below
+* callback - a custom [onComplete callback](#custom-oncomplete-callback)
 
 __Options__
 
-* cwd - working directory (default: process.cwd)
+* cwd - working directory (default: `process.cwd()`), the base of the default
+  config file, migrations directory and plugins
 * config
-     - string - location of the database.json file
-     - object - hash of [configuration](https://umigrate.readthedocs.org/projects/db-migrate/en/latest/Getting%20Started/configuration/) options
-* cmdOptions - hash of CMD options from [Basic Usage](https://db-migrate.readthedocs.io/en/latest/Getting%20Started/installation/)
-* env - the environment to run the migrations under
-* throwUncatched - Throw an error instead of calling `process.exit(1)`
+     - string - location of the config file
+     - object - the [configuration](../Getting Started/configuration.md)
+       itself, environments as keys
+* env - the environment to use
+* cmdOptions - the [options](../Getting Started/commands.md#options) of the
+  command line, with their long names, e.g.
+  `{ 'migrations-dir': 'db/migrations', 'v2-file': true }`
+* throwUncatched - do not register handlers for uncaught exceptions and
+  unhandled rejections, which log the error and call `process.exit(1)`
+* noPlugins - `true` to not load the [plugins](../Getting Started/plugins.md)
+  of the `package.json`
+* plugins - plugins to register in addition, an object of hook names, each
+  with an array of plugins
 
-# Programable API
+The [rc configs](../Getting Started/configuration.md#rc-configs) are applied
+in module mode as well. Note that this includes the arguments of the command
+line of your process, which rc parses, e.g. `--env` or `--table`.
 
-### registerAPIHook([callback])
+__Properties__
 
-Register all API hooks and initializes them. This needs to be executed
-before `run` is being executed.
+* version - the version of db-migrate
+* dataType - the [data types](generic datatypes.md)
+* config - the loaded configuration
+
+## up([specification | count], [scope], [callback])
+
+Migrates up. This is equal to the CLI `up`.
 
 __Arguments__
 
-* callback - custom callback
+* specification - a string, run the pending migrations up to the one starting
+  with this string
+* count - a number, the maximum number of migrations to run
+* scope - the [scope](../Getting Started/commands.md#scoping) to use
+* callback - custom callback, omitted if using Promises
 
 __Examples__
 
 ```javascript
-var dbm = dbmigrate.getInstance(true);
-dbm.registerAPIHook()
-.then(function() {
+await dbmigrate.up();
+await dbmigrate.up(12);
+await dbmigrate.up('20150207135259');
+await dbmigrate.up(1, 'test');
+```
 
-  dbm.run();
-});
+## down([specification | count], [scope], [callback])
+
+Migrates down. This is equal to the CLI `down`, without arguments only the
+last migration is reverted.
+
+__Arguments__
+
+* specification - a string, revert every migration executed after the one
+  starting with this string
+* count - a number, the maximum number of migrations to revert
+* scope - the scope to use
+* callback - custom callback, omitted if using Promises
+
+## reset([scope], [callback])
+
+Reverts all executed migrations of the scope.
+
+## sync(specification, [scope], [callback])
+
+Migrates up or down to the migration starting with `specification`. This is
+equal to the CLI `sync`.
+
+```javascript
+await dbmigrate.sync('20150207135259');
+```
+
+## check([count], [scope], [callback])
+
+Resolves with the pending migrations, objects with their `name`, without
+running them. This is equal to the CLI `check`. The count has no effect, pass
+`null` to give a scope only.
+
+```javascript
+const pending = await dbmigrate.check();
+console.log(pending.map(m => m.name));
+
+await dbmigrate.check(null, 'test');
+```
+
+## fix([specification | count], [scope], [callback])
+
+Rebuilds the schema learned from v2 migrations, see the CLI
+[fix](../Getting Started/commands.md#fix).
+
+## create(migrationName, [scope], [callback])
+
+Creates a new migration from a template. Choose the template with
+`cmdOptions` or `setConfigParam`, e.g. `setConfigParam('v2-file', true)`.
+
+__Arguments__
+
+* migrationName - the name of the new migration
+* scope - the scope to create it in
+* callback - custom callback, omitted if using Promises
+
+## createDatabase(dbname, [callback]) and dropDatabase(dbname, [callback])
+
+Create or drop a database, like `db:create` and `db:drop`.
+
+**Note:** in db-migrate 1.0.0 the promise resolves before the database is
+created or dropped, and with most drivers the process exits once it is done. Run `db-migrate
+db:create` in a separate process instead.
+
+## seed, undoSeed and resetSeed
+
+Seeders are not supported in 1.0, these methods reject with
+`Seeders are not supported by db-migrate 1.0`.
+
+## silence(isSilent)
+
+Silences or unsilences the log output of db-migrate.
+
+```javascript
+dbmigrate.silence(true);
+```
+
+## setConfigParam(param, value)
+
+Sets an option, like on the command line, before the next call:
+
+```javascript
+dbmigrate.setConfigParam('force-exit', true);
 ```
 
 ## run()
 
-Executes the default post initialization CLI behavior.
-
-__Examples__
-
-```javascript
-var dbm = dbmigrate.getInstance(true);
-dbm.run();
-```
-
-## up([[specification][count], [scope], [callback]])
-
-Migrates in upwards direction. This is equal to the CLI UP.
-
-__Arguments__
-
-* specification - Migration to migrate up to needs to start with this string
-* count - Number of migrations to be executed.
-* scope - Scope to be used or omitted.
-* callback - custom callback, omitted if using Promises
-
-__Examples__
+Executes the command line behavior, the command and options are taken from
+the arguments of the process. This is what the `db-migrate` binary does:
 
 ```javascript
-var dbm = dbmigrate.getInstance(true);
-dbm.up(12)
-.then(function() {
-
-  console.log('successfully migrated 12 migrations up');
-  return;
-});
+const dbmigrate = DBMigrate.getInstance();
+dbmigrate.registerAPIHook().then(() => dbmigrate.run());
 ```
 
-## down([[specification][count], [scope], [callback]])
+## registerAPIHook([callback])
 
-Migrates in downwards direction. This is equal to the CLI DOWN.
+Registers the API functions added by plugins on the instance, see
+[Writing plugins](../Developers/writing plugins.md#initapiaddfunctionhook-every-plugin).
+Returns a promise.
 
-__Arguments__
+## Custom onComplete callback
 
-* specification - Migration to migrate down to needs to start with this string
-* count - Number of migrations to be executed.
-* scope - Scope to be used or omitted.
-* callback - custom callback, omitted if using Promises
-
-__Examples__
+When a run finished, db-migrate calls its onComplete function, which closes
+the connection and logs `Done`. Replace it to handle the end of a run on your
+own, with the callback of `getInstance` or `setCustomCallback(callback)`;
+`setDefaultCallback()` restores the default.
 
 ```javascript
-var dbm = dbmigrate.getInstance(true);
-dbm.down(12)
-.then(function() {
+function onComplete(migrator, internals, originalErr, results) {
+  return new Promise((resolve, reject) => {
+    migrator.driver.close(err => {
+      if (originalErr || err) return reject(originalErr || err);
+      resolve(results);
+    });
+  });
+}
 
-  console.log('successfully migrated 12 migrations down');
-  return;
-});
+const dbmigrate = DBMigrate.getInstance(true, {}, onComplete);
 ```
 
-## sync([[specification][count], [scope] [callback]])
-
-Migrates to the specified migration and automatically detects if it needs to
-migrate up or down. This is equal to the CLI SYNC.
-
-__Arguments__
-
-* specification - Migration which is the destination and which needs to start
-with this string
-* scope - Scope to be used or omitted.
-* callback - custom callback, omitted if using Promises
-
-__Examples__
-
-```javascript
-var dbm = dbmigrate.getInstance(true);
-dbm.sync('20150207135259')
-.then(function() {
-
-  console.log('successfully migrated 12 migrations up');
-  return;
-});
-```
-
-## reset([[scope], [callback]])
-
-Migrates all currently executed migrations down.
-
-__Arguments__
-
-* scope - Scope to be used or omitted.
-* callback - custom callback, omitted if using Promises
- a Hook.
-__Examples__
-
-```javascript
-var dbm = dbmigrate.getInstance(true);
-dbm.reset()
-.then(function() {
-
-  console.log('successfully resetted all migrations!');
-  return;
-});
-```
-
-## silence(isSilent)
-
-Silences or unsilences logs.
-
-__Arguments__
-
-* isSilent - Boolean that silences if true is passed.
-
-__Examples__
-
-```javascript
-var dbm = dbmigrate.getInstance(true);
-dbm.silence(true);
-dbm.reset();
-```
-
-## create(migrationName[, [scope], [callback]])
-
-Creates a new migration from a template.
-
-__Arguments__
-
-* migrationName - The name for the new migration.
-* Scope - The scope to be used, can be omitted
-* callback - custom callback, omitted if using Promises
-
-## createDatabase(dbname[, callback])
-
-Creates a database with the name specified.
-
-__Arguments__
-
-* dbname - The name of the database.
-* callback - custom callback, omitted if using Promises
-
-## dropDatabase(dbname[, callback])
-
-Deletes the specified database.
-
-__Arguments__
-
-* dbname - The name of the database.
-* callback - custom callback, omitted if using Promises
+It has to close the connection of `migrator.driver`. Its return value is what
+the promise of the method resolves with.

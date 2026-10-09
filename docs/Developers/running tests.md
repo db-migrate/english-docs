@@ -1,17 +1,13 @@
-## Development
+# Running Tests
 
-The following command runs the vows tests.
+The tests of db-migrate use [lab](https://hapi.dev/module/lab/), `npm test`
+lints the code with eslint first:
 
 ```bash
+npm install
+cp test/db.config.example.json test/db.config.json
 npm test
 ```
 
-Running the tests requires a one-time setup of the **MySQL**, **MongoDB** and **Postgres** databases.
-
-```bash
-mysql -u root -e "CREATE DATABASE db_migrate_test;"
-createdb db_migrate_test
-```
-
-You will also need to copy `test/db.config.example.json` to `test/db.config.json`
-and adjust appropriate to setup configuration for your database instances.
+Adjust `test/db.config.json` to the database instances you test against. The
+drivers have their own test suites in their repositories.

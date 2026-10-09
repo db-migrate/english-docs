@@ -26,7 +26,9 @@ See [Plugins](plugins.md).
 
 The seeders were never finished. In 1.0, `db-migrate seed` and the seed
 functions of the programmable API fail with a clear message instead of
-silently doing nothing. A new concept for seeding follows separately.
+silently doing nothing. A new concept for seeding follows separately. The options
+`--seeds-table`, `--vcseeder-dir` and `--staticseeder-dir` are still accepted,
+but have no effect.
 
 ### transition is removed
 
@@ -54,6 +56,8 @@ Install the current version of your driver to get the
 
 Older drivers keep working, db-migrate then warns that migrations run without a
 lock.
+db-migrate-mongodb has no lock and no state management, see
+[Drivers](../drivers.md).
 
 ## What you get
 

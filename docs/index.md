@@ -9,11 +9,18 @@ Officially supported is Node.js 24 and newer. Coming from db-migrate 0.11? See
 
 ## _Official_ Supported Databases
 
-- Mysql (https://github.com/felixge/node-mysql) - npm i db-migrate-mysql
-- PostgreSQL (https://github.com/brianc/node-postgres) - npm i db-migrate-pg
-- sqlite3 (https://github.com/developmentseed/node-sqlite3) - npm i db-migrate-sqlite3
-- Mongodb (https://github.com/mongodb/node-mongodb-native) - npm i db-migrate-mongodb
-- CockroachDB (https://github.com/db-migrate/cockroachdb) - npm i db-migrate-cockroachdb
+- PostgreSQL - npm i db-migrate-pg, see [PostgreSQL](Drivers/pg.md)
+- MySQL and MariaDB - npm i db-migrate-mysql, see [MySQL](Drivers/mysql.md)
+- sqlite3 - npm i db-migrate-sqlite3, see [sqlite3](Drivers/sqlite3.md)
+- CockroachDB - npm i db-migrate-cockroachdb, see [CockroachDB](Drivers/cockroachdb.md)
+- MongoDB - npm i db-migrate-mongodb, see [MongoDB](Drivers/mongodb.md)
+
+## Getting started
+
+1. [Install](Getting Started/installation.md) db-migrate and your driver.
+2. [Configure](Getting Started/configuration.md) your database.
+3. [Create and run](Getting Started/usage.md) migrations, see all
+   [commands](Getting Started/commands.md).
 
 ## License
 

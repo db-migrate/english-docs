@@ -24,8 +24,15 @@ module.exports = {
 };
 ```
 
+db-migrate loads the plugins listed in `dependencies` and `devDependencies` of
+the `package.json` in the current directory, from its `node_modules`. A plugin
+without `hooks` or `loadPlugin` is skipped. Its `name` is replaced by the
+package name. `loadPlugin` is called whenever one of its hooks is about to be
+used, as long as it exists, so it deletes itself as shown.
+
 Some hooks are used by every plugin implementing them, others only by the first
-one, which is noted below.
+one, which is noted below. If several plugins implement such a hook, db-migrate
+warns and uses the first.
 
 ## Hooks
 
@@ -36,7 +43,7 @@ one, which is noted below.
 Reads the database config file instead of db-migrate, e.g. to support another
 format.
 
-### file:hook:require
+### file:hook:require (every plugin)
 
 `() => { extensions, load }`
 
@@ -50,17 +57,26 @@ calls `load(path)` and expects the migration module back, like `require` would
 return it: `{ up, down }` for a v1 migration or `{ migrate, _meta }` for a v2
 migration.
 
+The older name of this hook, `migrator:migration:hook:require`, still works,
+but db-migrate warns that the plugin is outdated.
+
 ### create:template (every plugin)
 
 Offers a template for `db-migrate create`, chosen by an option on the command
 line or in the config. The plugin exports:
 
 - `'init:template'`: `() => ({ option, type })`. The template is used when
-  `--<option>` is passed or `option` is set in the config.
+  `--<option>` is passed or `option` is set in the config. The first plugin
+  whose option is set wins. Without custom write, db-migrate writes
+  `<timestamp>-<name>.js` with the content of
+  `template:overwrite:provider:<type>`.
 - `'create:template:custom:write'`: `true` to write the file itself.
 - `'write:template'`: `(opts, write) => Promise`, with custom write only.
+  `opts` holds copies of the options (`argv`) and the config (`config`).
   Calls `write({ extension, type, suffix, pathExtension })` to create the
-  migration file with the given extension, from the template `type`.
+  migration file from the template `type`: `extension` (default `.js`) and
+  `suffix` are appended to the file name, `pathExtension` to the directory.
+  It can be called several times, e.g. for several files.
 
 ### template:overwrite:provider:&lt;type&gt; (first plugin)
 
@@ -82,7 +98,10 @@ shared by all connections of db-migrate.
 
 `(internals, config) => void`
 
-Implements a new command, `db-migrate <action>`.
+Implements a new command, `db-migrate <action>`. `internals.argv` holds the
+parsed options, its `_` the arguments after the command, and `config` the
+loaded configuration, `config.getCurrent()` returning `{ env, settings }` of
+the current environment.
 
 ### init:api:addfunction:hook (every plugin)
 

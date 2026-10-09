@@ -1,80 +1,40 @@
-## Installation
+# Installation
 
 Officially supported is Node.js 24 and newer. Older versions may work, but are
 not tested.
 
-## New Instructions Since (v0.10.x)
+Install db-migrate and the driver of your database in your project:
 
-To use db-migrate you need to install it globally first:
+    $ npm install db-migrate db-migrate-pg
+
+The official drivers are `db-migrate-pg`, `db-migrate-mysql`,
+`db-migrate-sqlite3`, `db-migrate-cockroachdb` and `db-migrate-mongodb`, see
+[Drivers](../drivers.md).
+
+Run it through npm:
+
+    $ npx db-migrate up
+
+or from the scripts of your `package.json`:
+
+```json
+{
+  "scripts": {
+    "migrate": "db-migrate up"
+  }
+}
+```
+
+db-migrate can be installed globally as well:
 
     $ npm install -g db-migrate
 
-If you want to use db-migrate as local module now you can install it in your
-local modules:
+The global `db-migrate` always runs the version installed in your project, if
+there is one, and falls back to the global version otherwise.
 
-    $ npm install db-migrate
+Run db-migrate from the root of your project: it reads the `package.json`
+there to find its [plugins](plugins.md), and resolves `database.json` and the
+`migrations` directory relative to the current directory by default.
 
-The following command will execute **always** your local version of db-migrate
-if you have installed a local version. If it does not find any local version
-in your current directory it executes the globally installed version.
-
-To use db-migrate you can now use:
-
-    $ db-migrate
-
-### Using db-migrate in tests
-
-You want to use db-migrate for example with travis ci? You need to do one of
-the following things:
-
- * Install it via package.json and call it via
-    $ node node_modules/db-migrate/bin/db-migrate
-
- * Install it globally via .travis.yml config and call it via
-    $ db-migrate
-
-## Basic Usage
-
-```
-Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]
-
-Down migrations are run in reverse run order, so migrationName is ignored for down migrations.
-Use the --count option to control how many down migrations are run (default is 1).
-
-Options:
-  --env, -e                   The environment to run the migrations under.    [default: "dev"]
-  --migrations-dir, -m        The directory containing your migration files.  [default: "./migrations"]
-  --count, -c                 Max number of migrations to run.
-  --dry-run                   Prints the SQL but doesn't run it.              [boolean]
-  --verbose, -v               Verbose mode.                                   [default: false]
-  --config                    Location of the database.json file.             [default: "./database.json"]
-  --force-exit                Call system.exit() after migration run          [default: false]
-  --sql-file                  Create sql files for up and down.               [default: false]
-  --coffee-file               Create a coffeescript migration file            [default: false]
-  --migration-table           Set the name of the migration table.
-  --table, --migration-table                                                  [default: "migrations"]
-  --state-table, --state, -s  Set the name of the migration state table.      [default: "migrations_state"]
-  --v2-file                   Create a v2 migration file                      [default: false]
-  --lock-timeout              Milliseconds without any sign of life after which a migration lock
-                              held by another process is taken over.          [default: 60000]
-  --lock-interval             Milliseconds between checks while waiting for the lock. [default: 1000]
-```
-
-
-## Old Installation instructions
-
-    $ npm install -g db-migrate
-
-DB-Migrate is now available to you via:
-
-    $ db-migrate
-
-### As local module
-
-Want to use db-migrate as local module?
-
-    $ npm install db-migrate
-
-DB-Migrate is now available to you via:
-
-    $ node node_modules/db-migrate/bin/db-migrate
+Next: [Configuration](configuration.md), [Usage](usage.md) and the
+[Commands](commands.md).

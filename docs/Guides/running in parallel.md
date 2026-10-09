@@ -7,7 +7,8 @@ so only one of them migrates.
 
 ## How it works
 
-1. Every process first determines the pending migrations. If there are none,
+1. Every process first determines the pending migrations (or, for `down`,
+   the migrations to revert). If there are none,
    it is done, without ever touching the lock.
 2. If there are pending migrations, the process tries to acquire the lock.
 3. The process holding the lock runs the migrations and releases the lock
@@ -61,5 +62,8 @@ The lock needs a driver declaring support for it:
 | db-migrate-sqlite3 | 1.1.0 |
 | db-migrate-cockroachdb | 5.8.0 |
 
-With any other driver db-migrate warns and migrates without a lock, as before
-1.0. Drivers declare their support with `_meta.supports.locking`.
+With any other driver, including db-migrate-mongodb, db-migrate warns and
+migrates without a lock, as before 1.0. Drivers declare their support with
+`_meta.supports.locking`.
+
+`--dry-run` and `--check` never take the lock.

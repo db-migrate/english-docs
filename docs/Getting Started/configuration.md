@@ -1,6 +1,11 @@
-## Configuration
+# Configuration
 
-db-migrate supports the concept of environments. For example, you might have a dev, test, and prod environment where you need to run the migrations at different times. Environment settings are loaded from a `database.json` file like the one shown below:
+## Environments
+
+db-migrate supports the concept of environments. For example, you might have
+a dev, test, and prod environment where you need to run the migrations at
+different times. The environments are read from a `database.json` in the
+current directory:
 
 ```json
 {
@@ -26,9 +31,7 @@ db-migrate supports the concept of environments. For example, you might have a d
     "password": "test",
     "host": "localhost",
     "database": "mydb",
-    "port": "20144",
-    "ssl": "true",
-    "schema": "my_schema"
+    "port": "20144"
   },
 
   "mongo": {
@@ -41,30 +44,32 @@ db-migrate supports the concept of environments. For example, you might have a d
 }
 ```
 
-You can also specify environment variables in your config file by using a special notation. Here is an example:
+Every environment names its `driver`: `pg` (also `postgres` and
+`postgresql`), `mysql`, `sqlite3` (also `sqlite`), `cockroachdb`, `mongodb`,
+or the name of any other driver installed as `db-migrate-<name>`. A driver
+can also be loaded from a path or module name:
+
 ```json
 {
-  "prod": {
-    "driver": "mysql",
-    "user": {"ENV": "PRODUCTION_USERNAME"},
-    "password": {"ENV": "PRODUCTION_PASSWORD"}
-  },
+  "dev": {
+    "driver": { "require": "./my-driver" }
+  }
 }
 ```
-In this case, db-migrate will search your environment for variables
-called `PRODUCTION_USERNAME` and `PRODUCTION_PASSWORD`, and use those values for the corresponding configuration entry.
 
-If you use the [dotenv](https://www.npmjs.com/package/dotenv) package to manage environment variables, db-migrate will automatically load it.
+All other settings are passed on to the driver, see the
+[driver pages](../drivers.md) for the settings of each driver. `username` is
+accepted as an alias of `user`.
 
-Note that if the settings for an environment are represented by a single string that string will be parsed as a database URL.
-
-You can pass the -e or --env option to db-migrate to select the environment you want to run migrations against. The --config option can be used to specify the path to your database.json file if it's not in the current working directory.
+Select the environment with `-e` or `--env`, and the config file with
+`--config` if it is not `./database.json`:
 
     db-migrate up --config config/database.json -e prod
 
-The above will run all migrations that haven't yet been run in the prod environment, grabbing the settings from config/database.json.
+## The default environment
 
-If the environment is not specified by the -e or --env option, db-migrate will look for an environment named `dev` or `development`. You can change this default behavior with the database.json file:
+Without `--env`, db-migrate uses the environment `dev`, or `development` if
+there is no `dev`. Change this with `defaultEnv` (or its alias `default`):
 
 ```json
 {
@@ -76,7 +81,8 @@ If the environment is not specified by the -e or --env option, db-migrate will l
 }
 ```
 
-In addition, the default env can also be set with an environment variable. This can be helpful if you'd like to use the `NODE_ENV` variable to select configuration:
+The default environment can also come from an environment variable, for
+example `NODE_ENV`:
 
 ```json
 {
@@ -85,47 +91,127 @@ In addition, the default env can also be set with an environment variable. This 
     "driver": "mysql",
     "user": {"ENV": "PRODUCTION_USERNAME"},
     "password": {"ENV": "PRODUCTION_PASSWORD"}
-  },
+  }
 }
 ```
 
-## DATABASE_URL
+## Environment variables
 
-Alternatively, you can specify a `DATABASE_URL` environment variable that will
-be used in place of the configuration file settings. This is helpful for use
-with Heroku.
-
-**Note**: If a database url is specified, the config file is being skipped. You
-can however also specify rc configs, where you can configure everything you can
-configure also on the CLI.
-
-## RC configs
-
-RC configs give the possibility to configure settings for more than just one
-project, as RC configs are being loaded from different directories.
-
-You can take a view over [here](https://github.com/dominictarr/rc#standards)
-where to save those configs.
-
-Most prominent locations are, the root directory where you currently execute
-db-migrate and your `HOME` directory. The file is always named `.db-migraterc`,
-except for some examples you can find under the link above.
-
-An example `.db-migraterc` config file could look like this:
+Any setting can be read from an environment variable with the notation
+`{"ENV": "NAME"}`, at any depth:
 
 ```json
 {
-  "sql-file": true,
-  "configFile": "path/to/config/database.json",
-  "table": "new_migration_table_name"
+  "prod": {
+    "driver": "mysql",
+    "user": {"ENV": "PRODUCTION_USERNAME"},
+    "password": {"ENV": "PRODUCTION_PASSWORD"}
+  }
 }
 ```
-Use `table` property in `.db-migraterc` config file to change the default name of migrations table.
 
-This would set activate the sql mode unless you would deactivate it in your
-database.json again, which always has the highest priority.
+db-migrate replaces them with the values of `PRODUCTION_USERNAME` and
+`PRODUCTION_PASSWORD`. An empty variable is reported with `--verbose`.
 
-The `configFile` is a special rc config variable, because `config` is reserved by the `rc` module.
+A whole environment can be read from a variable holding a database URL:
+
+```json
+{
+  "prod": {"ENV": "DATABASE_URL_PROD"}
+}
+```
+
+db-migrate loads a `.env` file from the current directory with
+[dotenv](https://www.npmjs.com/package/dotenv) before reading the config. Set
+`dotenvCustomPath` in the [rc config](#rc-configs) to load another file.
+
+## Database URLs
+
+An environment given as a string is parsed as a database URL:
+
+```json
+{
+  "prod": "postgres://user:password@db.example.com:5432/app?ssl=true"
+}
+```
+
+The scheme becomes the driver, query parameters become settings, like `ssl`
+above. sqlite3 takes the file name as path, `sqlite3:///var/app.db` or
+`sqlite3:app.db`.
+
+An environment can also combine a `url` with further settings:
+
+```json
+{
+  "prod": {
+    "url": "postgres://user:password@db.example.com/app",
+    "schema": "app"
+  }
+}
+```
+
+### DATABASE_URL
+
+If the environment variable `DATABASE_URL` is set, its settings are applied to
+every environment of the config file that is an object, overriding the same
+settings there. Without a config file, db-migrate connects to `DATABASE_URL`
+alone. This is helpful with hosting providers like Heroku.
+
+## overwrite and addIfNotExists
+
+An environment can overwrite settings, for example the ones coming from a
+`url` or `DATABASE_URL`, or add settings only if they are not set:
+
+```json
+{
+  "prod": {
+    "url": {"ENV": "DATABASE_URL"},
+    "overwrite": {
+      "database": "app"
+    },
+    "addIfNotExists": {
+      "port": 5432
+    }
+  }
+}
+```
+
+## Settings outside of the environments
+
+Top level keys of the config file which are no environment set defaults for
+`create`, e.g. `"sql-file": true` creates every migration with sql files, see
+[Commands](commands.md#create).
+
+## RC configs
+
+RC configs set the [options](commands.md#options) of db-migrate for more than
+one project, or just to avoid typing them. They are read by
+[rc](https://github.com/dominictarr/rc#standards) from these files, later ones
+taking precedence:
+
+1. `/etc/db-migrate/config`, `/etc/db-migraterc`
+2. `~/.config/db-migrate/config`, `~/.config/db-migrate`,
+   `~/.db-migrate/config`, `~/.db-migraterc`
+3. `.db-migraterc` in the current directory, or the first one found in a
+   parent directory
+
+The keys are the long names of the options, except for the table names: use
+`table` for the migrations table and `state` for the state table, the names
+`migration-table` and `state-table` are not picked up from rc configs. Options
+given on the command line take precedence over the rc configs.
+
+```json
+{
+  "configFile": "path/to/config/database.json",
+  "table": "new_migration_table_name",
+  "migrations-dir": "db/migrations",
+  "sql-file": true,
+  "lock-timeout": 120000,
+  "dotenvCustomPath": "config/.env"
+}
+```
+
+`configFile` sets the path of the config file, `config` is reserved by rc.
 
 ## SSH tunnels
 
@@ -136,24 +222,9 @@ section to your environment.
 ## State table and migration lock
 
 db-migrate keeps a state table next to the migrations table, `migrations_state`
-by default, set with `--state-table` or `state-table` in the rc config. It holds
-the [migration lock](../Guides/running in parallel.md) and the progress of
-running [v2 migrations](../Guides/migrations v2.md). The lock is tuned with
-`lock-timeout` and `lock-interval`.
-
-## Important - For MySQL users
-
-If you use MySQL, to be able to use multiple statements in your sql file, you have to set the property `multipleStatements: true` when creating the connection object. You can set it in your `database.json` as follows:
-
-```json
-{
-  "dev": {
-    "host": "localhost",
-    "user": { "ENV" : "DB_USER" },
-    "password" : { "ENV" : "DB_PASS" },
-    "database": "database-name",
-    "driver": "mysql",
-    "multipleStatements": true
-  }
-}
-```
+by default, set with `--state-table` or `state` in the rc config. It holds
+the [migration lock](../Guides/running in parallel.md) and the schema and
+progress of [v2 migrations](../Guides/migrations v2.md). The lock is tuned
+with `lock-timeout` and `lock-interval`. Keep the table, deleting it loses the
+lock and the information needed to revert v2 migrations and to recover
+interrupted runs.

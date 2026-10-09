@@ -34,7 +34,7 @@ your current working branch against this master.
 
 9. Push your rebased branch and submit your pull request.
 
-10. Make sure the travis tests in your pull request are all passing, if they
+10. Make sure the CI checks of your pull request are all passing, if they
 fail check why.
 
 ## Tips
@@ -99,7 +99,7 @@ operations which are not related to the concept of version controlling changes
 to the schema of a database. This excludes for example the ability to create a
 dump of the database or the schema. 
 To note: If you want to archive the latter one you might take a look at 
-[umigrate](https://travis-ci.org/wzrdtales/node-ultimate-migrate) which is the 
+[umigrate](https://github.com/wzrdtales/node-ultimate-migrate) which is the 
 partner project of db-migrate which adds the ability to generate migrations out
 of a given schema and also provides the ability to generate migrations for just
 the differences between existing migrations and the current schema.
@@ -123,6 +123,9 @@ needed to successfully modify the DD of your tables.
 This includes all DDL methods provided by SQL naturally.
 
 ### Description of the seeder interface
+
+**Note:** the seeders were never finished and are not part of db-migrate 1.0,
+the description below is kept for the concept.
 
 The seeder interface provides the ability to handle all operations, that
 are not DDL specific and thus not a migration.
@@ -720,6 +723,43 @@ don't have to. For example transactions, if you don't have transactions, you
 can't implement them, obviously. However, if you can't support a feature
 defined by this standard API, thats often the case for transactions for example
 you should outline this in your documentation, so the user is warned about it.
+
+#### State management and the migration lock
+
+db-migrate 1.0 keeps the migrations table and the [state table](../Getting Started/configuration.md#state-table-and-migration-lock)
+through these methods of the driver: `_createList`, `_getList`, `_insertEntry`,
+`_deleteEntry`, `_createKV`, `_getKV`, `_insertKV`, `_updateKV`, `_deleteKV`
+and `_updateKVC`. db-migrate-base 2.4.0 implements them with plain SQL,
+override them where your database needs it. A driver missing them still
+works, db-migrate warns and falls back to `createMigrationsTable`.
+
+The [migration lock](../Guides/running in parallel.md) is only used by drivers
+declaring it:
+
+```javascript
+  _meta: {
+    supports: {
+      locking: true
+    }
+  }
+```
+
+Declare it only if `_updateKVC(table, key, value, column, expected)` updates
+atomically, matching the row only if `column` still holds `expected`, and
+`run_on` is set by the clock of the database.
+
+#### v2 migrations
+
+Further flags in `_meta.supports`: `optionParam: true` if the methods taking
+a callback accept an options object in its place, `columnStrategies: true` if
+`removeColumn` honors the [column strategies](../Guides/migrations v2.md#removing-notnull-columns).
+
+A driver can add instructions to v2 migrations with `learnable` (how an
+instruction changes the learned schema and which reverse operation it
+records) and `statechanger` (persisting the state, usually `this._default()`),
+see db-migrate-cockroachdb for an example. To make additional methods
+available in v1 migrations, add them to `intern.interfaces.MigratorInterface`
+in `connect`.
 
 #### Publishing your driver
 

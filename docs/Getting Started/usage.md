@@ -1,79 +1,81 @@
 # Usage of db-migrate
 
-To use db-migrate, you call it via the command line. When entering only the
-command without paramaters you will see something like this:
+db-migrate is used from the command line:
 
-```
-Usage: db-migrate [up|down|reset|create|db] [[dbname/]migrationName|all] [options]
+    db-migrate [up|down|check|reset|sync|create|db] [[dbname/]migrationName|all] [options]
 
-Down migrations are run in reverse run order, so migrationName is ignored for down migrations.
-Use the --count option to control how many down migrations are run (default is 1).
-
-Options:
-  --env, -e                   The environment to run the migrations under.    [default: "dev"]
-  --migrations-dir, -m        The directory containing your migration files.  [default: "./migrations"]
-  --count, -c                 Max number of migrations to run.
-  --dry-run                   Prints the SQL but doesn't run it.              [boolean]
-  --verbose, -v               Verbose mode.                                   [default: false]
-  --config                    Location of the database.json file.             [default: "./database.json"]
-  --force-exit                Call system.exit() after migration run          [default: false]
-  --sql-file                  Create sql files for up and down.               [default: false]
-  --coffee-file               Create a coffeescript migration file            [default: false]
-  --migration-table           Set the name of the migration table.
-  --table, --migration-table                                                  [default: "migrations"]
-```
+See [Commands](commands.md) for every command and option. db-migrate can also
+be used as a module, see the [programmable API](../API/programable.md).
 
 ## Creating Migrations
 
-To create a migration, execute `db-migrate create` with a title. `node-db-migrate` will create a node module within `./migrations/` which contains the following two exports:
+To create a migration, execute `db-migrate create` with a title. db-migrate
+creates a node module within `./migrations/`:
 
 ```javascript
-exports.up = function (db, callback) {
-  callback();
+'use strict';
+
+var dbm;
+var type;
+var seed;
+
+/**
+  * We receive the dbmigrate dependency from dbmigrate initially.
+  * This enables us to not have to rely on NODE_PATH.
+  */
+exports.setup = function(options, seedLink) {
+  dbm = options.dbmigrate;
+  type = dbm.dataType;
+  seed = seedLink;
 };
 
-exports.down = function (db, callback) {
-  callback();
-};
-```
-
-Note:  In newer versions of db-migrate, we have included a promise-based interface.  In these newer versions, the `create` command will generate a file containing the following:
-
-```javascript
 exports.up = function(db) {
-    return null;
+  return null;
 };
 
 exports.down = function(db) {
-    return null;
+  return null;
+};
+
+exports._meta = {
+  "version": 1
 };
 ```
 
-All you have to do is populate these, invoking `callback()` or returning the result of your `db` operation when complete, and you are ready to migrate!
+This is a v1 migration: `up` migrates, `down` reverts it. For migrations
+without a down function, see [Migration schema v2](../Guides/migrations v2.md).
+
+`db` is the driver of your database, see the [SQL API](../API/SQL.md) and the
+[NoSQL API](../API/NoSQL.md) for what it offers. Every operation returns a
+promise and accepts a callback as last argument as well. A migration either
+returns a promise, or takes a callback as last argument and calls it when it
+is done.
+
+`setup` is optional. It is called before `up` or `down` with these options:
+
+| Option | |
+|---|---|
+| `dbmigrate` | `{ version, dataType }`, the version of db-migrate and the [data types](../API/generic datatypes.md) |
+| `type` | the data types |
+| `dryRun` | `true` when running with `--dry-run` |
+| `cwd` | the working directory |
+| `noTransactions` | `true` when running with `--non-transactional` |
+| `verbose` | `true` when running with `--verbose` |
+| `ignoreOnInit` | `true` when running with `--ignore-on-init` |
+| `log` | the logger of db-migrate, with `info`, `warn`, `error` and `verbose` |
+| `Promise` | the promise library of db-migrate (bluebird) |
+
+`seedLink` is a remnant of the seeders and is always undefined in 1.0.
 
 For example:
 
     $ db-migrate create add-pets
     $ db-migrate create add-owners
 
-The first call creates `./migrations/20111219120000-add-pets.js`, which we can populate:
+The first call creates `./migrations/20111219120000-add-pets.js`, which we can
+populate:
 
 ```javascript
-/* Callback-based version */
-exports.up = function (db, callback) {
-  db.createTable('pets', {
-    id: { type: 'int', primaryKey: true },
-    name: 'string'
-  }, callback);
-};
-
-exports.down = function (db, callback) {
-  db.dropTable('pets', callback);
-};
-```
-
-```javascript
-/* Promise-based version */
 exports.up = function (db) {
   return db.createTable('pets', {
     id: { type: 'int', primaryKey: true },
@@ -86,135 +88,73 @@ exports.down = function (db) {
 };
 ```
 
-The second creates `./migrations/20111219120005-add-owners.js`, which we can populate:
+The same with a callback:
 
 ```javascript
-/* Callback-based version */
 exports.up = function (db, callback) {
-  db.createTable('owners', {
+  db.createTable('pets', {
     id: { type: 'int', primaryKey: true },
     name: 'string'
   }, callback);
 };
 
 exports.down = function (db, callback) {
-  db.dropTable('owners', callback);
+  db.dropTable('pets', callback);
 };
 ```
 
+Several operations in one migration are easiest with an async function:
+
 ```javascript
-/* Promise-based version */
-exports.up = function (db) {
-  return db.createTable('owners', {
+exports.up = async function (db) {
+  await db.createTable('owners', {
     id: { type: 'int', primaryKey: true },
     name: 'string'
   });
+  await db.addColumn('pets', 'owner_id', { type: 'int' });
 };
 
-exports.down = function (db) {
-  return db.dropTable('owners');
+exports.down = async function (db) {
+  await db.removeColumn('pets', 'owner_id');
+  await db.dropTable('owners');
 };
 ```
 
-
-Executing multiple statements against the database within a single migration requires a bit more care. You can either nest the migrations like:
+With callbacks, nest them:
 
 ```javascript
-/* Callback-based version */
 exports.up = function (db, callback) {
-  db.createTable('pets', {
+  db.createTable('owners', {
     id: { type: 'int', primaryKey: true },
     name: 'string'
-  }, createOwners);
-
-  function createOwners(err) {
-    if (err) { callback(err); return; }
-    db.createTable('owners', {
-      id: { type: 'int', primaryKey: true },
-      name: 'string'
-    }, callback);
-  }
-};
-
-exports.down = function (db, callback) {
-  db.dropTable('pets', function(err) {
-    if (err) { callback(err); return; }
-    db.dropTable('owners', callback);
+  }, function (err) {
+    if (err) return callback(err);
+    db.addColumn('pets', 'owner_id', { type: 'int' }, callback);
   });
 };
 ```
 
-```javascript
-/* Promise-based version */
-exports.up = function (db) {
-  return db.createTable('pets', {
-    id: { type: 'int', primaryKey: true },
-    name: 'string'
-  })
-  .then(
-    function(result) {
-      db.createTable('owners', {
-        id: { type: 'int', primaryKey: true },
-        name: 'string'
-      });
-    },
-    function(err) {
-      return;
-    }
-  );
-};
+### Transactions
 
-exports.down = function (db) {
-  return db.dropTable('pets')
-    .then(
-      function(result) {
-        db.dropTable('owners');
-      },
-      function(err) {
-        return;
-      }
-    );
-};
-```
-
-or use the async library to simplify things a bit, such as:
-
-```javascript
-var async = require('async');
-
-exports.up = function (db, callback) {
-  async.series([
-    db.createTable.bind(db, 'pets', {
-      id: { type: 'int', primaryKey: true },
-      name: 'string'
-    }),
-    db.createTable.bind(db, 'owners', {
-      id: { type: 'int', primaryKey: true },
-      name: 'string'
-    })
-  ], callback);
-};
-
-exports.down = function (db, callback) {
-  async.series([
-    db.dropTable.bind(db, 'pets'),
-    db.dropTable.bind(db, 'owners')
-  ], callback);
-};
-```
+v1 migrations run inside a transaction of the driver (PostgreSQL, CockroachDB,
+MySQL, sqlite3), together with writing their record into the migrations table.
+Whether a failed migration is rolled back completely depends on whether your
+database can roll back schema changes. Disable the transaction with
+`--non-transactional`. db-migrate does not revert a failed v1 migration on its
+own, see [Failures and recovery](../Guides/failures and recovery.md).
 
 ### Using files for sqls
 
-If you prefer to use sql files for your up and down statements, you can use the `--sql-file` option to automatically generate these files and the javascript code that load them.
+If you prefer to write your up and down statements in sql files, use the
+`--sql-file` option, it creates the files and the javascript code loading
+them.
 
 To write migrations as plain SQL files, without any JavaScript, use the
 [db-migrate-plugin-sql](plugins.md#plain-sql-migrations) plugin instead.
 
-For example:
-
     $ db-migrate create add-people --sql-file
 
-This call creates 3 files:
+This creates 3 files:
 
 ```
 ./migrations/20111219120000-add-people.js
@@ -222,97 +162,65 @@ This call creates 3 files:
 ./migrations/sqls/20111219120000-add-people-down.sql
 ```
 
-The sql files will have the following content:
+The sql files contain:
+
 ```sql
 /* Replace with your SQL commands */
 ```
 
-And the javascript file with the following code that load these sql files:
+and the javascript file reads them and runs their content with `runSql`:
 
 ```javascript
-var dbm;
-var type;
-var fs = require('fs');
-var path = require('path');
+exports.up = function(db) {
+  var filePath = path.join(__dirname, 'sqls', '20111219120000-add-people-up.sql');
+  return new Promise( function( resolve, reject ) {
+    fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
+      if (err) return reject(err);
+      console.log('received data: ' + data);
 
-/**
-  * We receive the dbmigrate dependency from dbmigrate initially.
-  * This enables us to not have to rely on NODE_PATH.
-  */
-exports.setup = function(options) {
-  dbm = options.dbmigrate;
-  type = dbm.datatype;
-};
-
-exports.up = function(db, callback) {
-  var filePath = path.join(__dirname + '/sqls/20111219120000-add-people-up.sql');
-  fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
-    if (err) return console.log(err);
-    db.runSql(data, function(err) {
-      if (err) return console.log(err);
-      callback();
+      resolve(data);
     });
-  });
-};
-
-exports.down = function(db, callback) {
-  var filePath = path.join(__dirname + '/sqls/20111219120000-add-people-down.sql');
-  fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){
-    if (err) return console.log(err);
-    db.runSql(data, function(err) {
-      if (err) return console.log(err);
-      callback();
-    });
+  })
+  .then(function(data) {
+    return db.runSql(data);
   });
 };
 ```
 
-** Making it as default **
+Whether a file may contain several statements depends on the driver, for
+MySQL enable [multipleStatements](../Drivers/mysql.md).
 
-To not need to always specify the `sql-file` option in your `db-migrate create` commands, you can set a property in your `database.json` as follows:
+To always create sql files, set `"sql-file": true` as a top level key of the
+`database.json` or in the [rc config](configuration.md#rc-configs).
 
-```
-{
-    "dev": {
-      "host": "localhost",
-    ...
-  },
-    "sql-file" : true
-}
-```
+With `--sql-file --ignore-on-init`, the up migration only runs the up sql file
+if db-migrate is not run with `--ignore-on-init`. This is useful for
+migrations creating what a fresh database got already from a dump.
 
 ## Running Migrations
 
-When first running the migrations, all will be executed in sequence. A table named `migrations` will also be created in your database to track which migrations have been applied.
+When first running the migrations, all of them are executed in sequence. The
+table `migrations` is created to track which migrations have been applied.
 
       $ db-migrate up
-      [INFO] Processed migration 20111219120000-add-pets
-      [INFO] Processed migration 20111219120005-add-owners
+      [INFO] [migration] Processed 20111219120000-add-pets
+      [INFO] [migration] Processed 20111219120005-add-owners
       [INFO] Done
 
-Subsequent attempts to run these migrations will result in the following output
+Subsequent runs only execute what is new:
 
       $ db-migrate up
-      [INFO] No migrations to run
+      [INFO] [migration] Nothing to run
       [INFO] Done
 
-If we were to create another migration using `db-migrate create`, and then execute migrations again, we would execute only those not previously executed:
-
-      $ db-migrate up
-      [INFO] Processed migration 20111220120210-add-kennels
-      [INFO] Done
-
-You can also run migrations incrementally by specifying a date substring. The example below will run all migrations created on or before December 19, 2011:
+Run migrations up to a date by giving a prefix of their name. The example runs
+all migrations created on or before December 19, 2011:
 
       $ db-migrate up 20111219
-      [INFO] Processed migration 20111219120000-add-pets
-      [INFO] Processed migration 20111219120005-add-owners
-      [INFO] Done
 
-You can also run a specific number of migrations with the -c option:
+Or a specific number of migrations with `-c`:
 
       $ db-migrate up -c 1
-      [INFO] Processed migration 20111219120000-add-pets
-      [INFO] Done
 
-All of the down migrations work identically to the up migrations by substituting the word `down` for `up`.
+`db-migrate down` works the same way in the other direction, by default it
+reverts the last migration. See [Commands](commands.md).
