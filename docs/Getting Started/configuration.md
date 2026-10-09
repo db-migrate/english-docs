@@ -127,6 +127,20 @@ database.json again, which always has the highest priority.
 
 The `configFile` is a special rc config variable, because `config` is reserved by the `rc` module.
 
+## SSH tunnels
+
+To connect through an ssh tunnel, install
+[db-migrate-plugin-tunnel-ssh](plugins.md#ssh-tunnels) and add a `tunnel`
+section to your environment.
+
+## State table and migration lock
+
+db-migrate keeps a state table next to the migrations table, `migrations_state`
+by default, set with `--state-table` or `state-table` in the rc config. It holds
+the [migration lock](../Guides/running in parallel.md) and the progress of
+running [v2 migrations](../Guides/migrations v2.md). The lock is tuned with
+`lock-timeout` and `lock-interval`.
+
 ## Important - For MySQL users
 
 If you use MySQL, to be able to use multiple statements in your sql file, you have to set the property `multipleStatements: true` when creating the connection object. You can set it in your `database.json` as follows:

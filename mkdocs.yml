@@ -8,6 +8,12 @@ nav:
       - "Configuration": Getting Started/configuration.md
       - "Commands": Getting Started/commands.md
       - "Usage": Getting Started/usage.md
+      - "Plugins": Getting Started/plugins.md
+      - "Upgrading from 0.11": Getting Started/upgrading.md
+  - Guides:
+      - "Migration schema v2": Guides/migrations v2.md
+      - "Running in parallel": Guides/running in parallel.md
+      - "Failures and recovery": Guides/failures and recovery.md
   - API:
       - "Generic Datatypes": API/generic datatypes.md
       - "SQL API": API/SQL.md
@@ -16,6 +22,7 @@ nav:
   - Developers:
       - "Running Tests": Developers/running tests.md
       - "Contributing": Developers/contributing.md
+      - "Writing plugins": Developers/writing plugins.md
 docs_dir: docs
 repo_url: https://github.com/db-migrate/english-docs
 theme: readthedocs

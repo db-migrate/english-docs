@@ -213,17 +213,6 @@ dbm.silence(true);
 dbm.reset();
 ```
 
-## transition()
-
-Starts the transmission helper for the dbmigrate protocol migration.
-
-__Examples__
-
-```javascript
-var dbm = dbmigrate.getInstance(true);
-dbm.transition();
-```
-
 ## create(migrationName[, [scope], [callback]])
 
 Creates a new migration from a template.

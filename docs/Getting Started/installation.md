@@ -1,5 +1,8 @@
 ## Installation
 
+Officially supported is Node.js 24 and newer. Older versions may work, but are
+not tested.
+
 ## New Instructions Since (v0.10.x)
 
 To use db-migrate you need to install it globally first:
@@ -50,6 +53,11 @@ Options:
   --coffee-file               Create a coffeescript migration file            [default: false]
   --migration-table           Set the name of the migration table.
   --table, --migration-table                                                  [default: "migrations"]
+  --state-table, --state, -s  Set the name of the migration state table.      [default: "migrations_state"]
+  --v2-file                   Create a v2 migration file                      [default: false]
+  --lock-timeout              Milliseconds without any sign of life after which a migration lock
+                              held by another process is taken over.          [default: 60000]
+  --lock-interval             Milliseconds between checks while waiting for the lock. [default: 1000]
 ```
 
 

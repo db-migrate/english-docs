@@ -1,10 +1,11 @@
-[![Build Status](https://travis-ci.org/db-migrate/node-db-migrate.svg?branch=master)](https://travis-ci.org/db-migrate/node-db-migrate)
-[![Dependency Status](https://david-dm.org/db-migrate/node-db-migrate.svg)](https://david-dm.org/db-migrate/node-db-migrate)
-[![devDependency Status](https://david-dm.org/db-migrate/node-db-migrate/dev-status.svg)](https://david-dm.org/db-migrate/node-db-migrate#info=devDependencies)
+[![Build Status](https://github.com/db-migrate/node-db-migrate/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/db-migrate/node-db-migrate/actions/workflows/ci.yml)
 
 # db-migrate
 
 Database migration framework for node.js
+
+Officially supported is Node.js 24 and newer. Coming from db-migrate 0.11? See
+[Upgrading from 0.11](Getting Started/upgrading.md).
 
 ## _Official_ Supported Databases
 

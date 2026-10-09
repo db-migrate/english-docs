@@ -207,6 +207,9 @@ exports.down = function (db, callback) {
 
 If you prefer to use sql files for your up and down statements, you can use the `--sql-file` option to automatically generate these files and the javascript code that load them.
 
+To write migrations as plain SQL files, without any JavaScript, use the
+[db-migrate-plugin-sql](plugins.md#plain-sql-migrations) plugin instead.
+
 For example:
 
     $ db-migrate create add-people --sql-file
