@@ -18,7 +18,8 @@ exports._meta = {
 };
 ```
 
-Data migrations need db-migrate 1.3.0 and db-migrate-base 2.5.0, which comes
+Data migrations need db-migrate 1.3.0, soft delete, `purge` and the
+transactions 1.4.0, and db-migrate-base 2.5.0, which comes
 with db-migrate-pg 1.7.0, db-migrate-mysql 3.2.0, db-migrate-sqlite3 1.2.0 and
 db-migrate-cockroachdb 5.9.0.
 
@@ -32,6 +33,8 @@ schema migration.
 | `insert(table, rows, [options])` | deleting the inserted rows |
 | `update(table, set, where, [options])` | restoring the previous values |
 | `delete(table, where, [options])` | inserting the deleted rows again |
+| `delete(table, where, { mode: 'soft', column })` | marking the rows as not deleted again |
+| `purge(table, [migration], [options])` | can not be reverted |
 | `runSql(sql, [params], options)` | the SQL given with `revert` |
 
 `all(sql, [params])` reads rows, it is no step and changes nothing.
@@ -80,6 +83,42 @@ reverted. Rows deleted by the database on its own, e.g. by a foreign key with
 `ON DELETE CASCADE`, are not in the backup, delete them explicitly first if
 reverting has to bring them back.
 
+### Soft delete
+
+Copying every deleted row is expensive for large tables. In soft mode,
+`delete` keeps the rows and only marks them as deleted, in a column of your
+table, which your application filters by:
+
+```js
+await db.delete('pets', { kind: 'fish' }, { mode: 'soft', column: 'deleted_at' });
+```
+
+The column gets the current time, or `value` if given, the rows still active
+have `NULL` there. Rows deleted before, by your application or another
+migration, are left as they are. Each row also gets a mark of the step in
+its `__dbmigrate__flag` column, appended to what is there already. Reverting
+sets the column of the marked rows back to `NULL` and removes the mark.
+
+Soft mode works in batches by the key like `update`, but needs no backup
+table. It needs the `__dbmigrate__flag` column, so tables created by v2
+migrations only.
+
+### purge
+
+Once the soft deleted rows are not needed anymore, a later migration deletes
+them for good:
+
+```js
+// the rows soft deleted by one migration
+await db.purge('pets', '20261009120000-remove-fish');
+// all soft deleted rows of the table
+await db.purge('pets');
+```
+
+`purge` deletes in batches by the key, `{ batch }` and `{ key }` work like
+for `delete`. It can not be reverted, the migration running it can not be
+reverted anymore.
+
 ### runSql
 
 Raw SQL needs the SQL reverting it, or `irreversible`:
@@ -91,6 +130,23 @@ await db.runSql('UPDATE pets SET age = age + 1', {
 await db.runSql('UPDATE pets SET kind = ? WHERE kind = ?', ['dog', 'hound'], {
   revert: ['UPDATE pets SET kind = ? WHERE kind = ?', ['hound', 'dog']]
 });
+```
+
+## Transactions
+
+Each step runs inside a transaction, `update` and `delete` one per batch, so
+a step or batch failing or interrupted leaves no half of it behind. Creating
+the backup table of `update` and `delete` runs outside of it, as it commits
+the transaction in MySQL.
+
+Opt out for statements which can not run inside a transaction:
+
+```js
+exports._meta = {
+  version: 2,
+  type: 'dml',
+  transactions: false
+};
 ```
 
 ## Irreversible steps
@@ -109,6 +165,9 @@ continues the step with the next batch, using the backup taken before, see
 [Failures and recovery](failures and recovery.md). With `_meta.recovery:
 'rollback'`, the executed steps are reverted and the migration runs again
 instead.
+
+Long running data migrations can run in the background instead, while your
+application keeps running, see [Background migrations](background migrations.md).
 
 ## Dry run
 

@@ -149,6 +149,16 @@ Create or drop a database, like `db:create` and `db:drop`.
 The promise resolves once the database is created or dropped. Before
 db-migrate 1.1.0 it resolved early and the process exited afterwards.
 
+## executeWork([options])
+
+Runs the jobs of [background migrations](../Guides/background migrations.md)
+and returns `{ done, stop }` right away, see there for the options.
+
+```javascript
+const worker = dbmigrate.executeWork({ parallel: 2, pause: 50, watch: true });
+await worker.stop();
+```
+
 ## seed([name], [callback])
 
 Runs the [seeds](../Guides/seeds.md), all or the one named, like

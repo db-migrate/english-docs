@@ -104,3 +104,8 @@ at is always safe to revert or to run again.
 - An interrupted revert is continued by the next `db-migrate down`.
 - A `runSql` interrupted before it was confirmed is run again, like a step of
   a schema migration.
+
+Since db-migrate 1.4.0 each step, and each batch of `update` and `delete`,
+runs in a transaction, so nothing of it is left behind half done. The jobs of
+[background migrations](background migrations.md) are recovered the same way
+by the worker taking them over.
